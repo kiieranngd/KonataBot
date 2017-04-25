@@ -1,0 +1,2 @@
+# KonataBot
+Konata Discord Bot!
