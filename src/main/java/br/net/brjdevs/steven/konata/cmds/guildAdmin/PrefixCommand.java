@@ -13,7 +13,7 @@ public class PrefixCommand {
     @RegisterCommand
     public static ICommand prefix() {
         return new ICommand.Builder()
-                .setCategory(Category.GUILD_ADMIN)
+                .setCategory(Category.MODERATION)
                 .setAliases("prefix")
                 .setName("Prefix Command")
                 .setDescription("Changes the prefix if you need!")

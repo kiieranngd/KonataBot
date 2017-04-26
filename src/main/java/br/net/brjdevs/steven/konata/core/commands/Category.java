@@ -4,7 +4,7 @@ public enum Category {
     FUN("Fun", "\uD83D\uDD79"),
     INFORMATIVE("Informative", "\u2139"),
     BOT_ADMIN("Bot Administrator", "\u2699"),
-    GUILD_ADMIN("Guild Administrator", "\uD83D\uDDA5"),
+    MODERATION("Moderation", "\uD83D\uDDA5"),
     MUSIC("Music", "\uD83C\uDFB5");
     private String name, emoji;
 

@@ -6,7 +6,6 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
-import br.net.brjdevs.steven.konata.listeners.MemberListener;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -15,7 +14,7 @@ public class AnnouncesCommand {
     @RegisterCommand
     public static ICommand greeting() {
         return new ICommand.Builder()
-                .setCategory(Category.GUILD_ADMIN)
+                .setCategory(Category.MODERATION)
                 .setAliases("greeting")
                 .setName("Greeting Command")
                 .setDescription("Sets a greeting message!")
@@ -97,7 +96,7 @@ public class AnnouncesCommand {
     @RegisterCommand
     public static ICommand farewell() {
         return new ICommand.Builder()
-                .setCategory(Category.GUILD_ADMIN)
+                .setCategory(Category.MODERATION)
                 .setAliases("farewell")
                 .setName("Farewell Command")
                 .setDescription("Sets a farewell message!")
