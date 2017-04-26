@@ -220,6 +220,7 @@ public class MusicCommands {
                                     voiceChannel = event.getMember().getVoiceState().getChannel();
                                 feeder.subscribe(event.getGuild(), voiceChannel);
                                 event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Connected to radio, now you can only use play and queue command.").queue();
+                                KonataBot.getInstance().getMusicManager().getMusicManagers().remove(event.getGuild().getIdLong());
                             }
                             break;
                         default:
