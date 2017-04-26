@@ -41,6 +41,10 @@ public class CommandManager {
         return commands;
     }
 
+    public List<ICommand> getCommands(Category category) {
+        return commands.stream().filter(command -> category.equals(command.getCategory())).collect(Collectors.toList());
+    }
+
     public void invoke(CommandEvent event) {
         ICommand cmd = event.getCommand();
         if (!cmd.isPrivateAvailable() && !event.isFromType(ChannelType.TEXT)) {

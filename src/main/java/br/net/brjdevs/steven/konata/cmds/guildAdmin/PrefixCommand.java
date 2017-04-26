@@ -17,7 +17,9 @@ public class PrefixCommand {
                 .setAliases("prefix")
                 .setName("Prefix Command")
                 .setDescription("Changes the prefix if you need!")
-                .setUsageInstruction("prefix <prefix>")
+                .setUsageInstruction("prefix <prefix> //changes the custom prefix\n" +
+                        "prefix //returns the custom prefix\n" +
+                        "prefix reset //resets the custom prefix\n\n*Requires MESSAGE_MANAGE permission.*")
                 .setRequiredPermission(Permission.MESSAGE_MANAGE)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {

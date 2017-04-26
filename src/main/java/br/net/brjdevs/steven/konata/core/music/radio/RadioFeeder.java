@@ -63,6 +63,7 @@ public class RadioFeeder extends AudioEventAdapter {
         t.start();
     }
 
+
     public boolean isPlaying() {
         return currentTrack != null;
     }
@@ -76,8 +77,11 @@ public class RadioFeeder extends AudioEventAdapter {
     }
 
     public boolean startNextTrack(boolean noInterrupt) {
-        currentTrack = queue.poll();
-        return audioPlayer.startTrack(currentTrack == null ? null : currentTrack.getTrack(), noInterrupt);
+        currentTrack = queue.peek();
+        boolean b = audioPlayer.startTrack(currentTrack == null ? null : currentTrack.getTrack(), noInterrupt);
+        if (b)
+            queue.poll();
+        return b;
     }
 
     public void unsubscribe(Guild guild) {
@@ -100,14 +104,31 @@ public class RadioFeeder extends AudioEventAdapter {
         return queue;
     }
 
-    public void tick() {
+
+    public int getAverageBufferSize() {
+        if (subscribers.isEmpty())
+            return -1;
+        return subscribers.stream().mapToInt(s -> s.getBuffer().size()).sum() / subscribers.size();
+    }
+
+    private void tick() {
+        if (getAverageBufferSize() > 150)
+            return;
+
         AudioFrame frame = audioPlayer.provide();
 
         if (subscribers.isEmpty())
             return;
 
         if (frame != null) {
-            subscribers.forEach(listener -> listener.feed(frame));
+            List<Subscriber> toUnsubscribe = new ArrayList<>();
+            subscribers.forEach(subscriber -> {
+                if (subscriber.getBuffer().size() > 250) {
+                    toUnsubscribe.add(subscriber);
+                } else
+                    subscriber.feed(frame);
+            });
+            toUnsubscribe.forEach(subscribers::remove);
         }
     }
 
@@ -135,8 +156,19 @@ public class RadioFeeder extends AudioEventAdapter {
             }
         }).forEach(Subscriber::connect);
 
-        toUnregister.forEach(subscribers::remove);
+        subscribers.removeAll(toUnregister);
     }
+
+    @Override
+    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+        LOGGER.info("Got onTrackException at track `" + track.getInfo().title + "`");
+    }
+
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
+        LOGGER.info("Track `" + track.getInfo().title + "` got stuck.");
+    }
+
 
     public static class RadioTrackLoader implements AudioLoadResultHandler {
 
@@ -152,7 +184,7 @@ public class RadioFeeder extends AudioEventAdapter {
 
         @Override
         public void trackLoaded(AudioTrack track) {
-            if (FILTERED_WORDS.stream().anyMatch(s -> track.getInfo().title.contains(s))) {
+            if (FILTERED_WORDS.stream().anyMatch(s -> track.getInfo().title.toLowerCase().contains(s.toLowerCase()))) {
                 textChannel.sendMessage(Emojis.NO_GOOD + " This song's title contains a filtered word.").queue();
                 return;
             }

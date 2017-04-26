@@ -102,9 +102,11 @@ public class TrackScheduler extends AudioEventAdapter {
         startNext(true);
     }
 
-    public void stop() {
+    public int stop() {
+        int removedSongs = queue.size();
         queue.clear();
-        startNext(true);
+        audioPlayer.stopTrack();
+        return removedSongs;
     }
 
     @Override
@@ -124,11 +126,19 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         voteSkips.clear();
-        TextChannel channel = currentTrack.getChannel();
-        if (channel != null && channel.canTalk())
-            channel.deleteMessageById(lastMessageId).queue();
+        if (currentTrack != null) {
+            TextChannel channel = currentTrack.getChannel();
+            if (channel != null && channel.canTalk())
+                channel.deleteMessageById(lastMessageId).queue();
+        }
         if (endReason.mayStartNext) {
             startNext(false);
+            if (currentTrack == null) {
+                getGuild().getAudioManager().closeAudioConnection();
+                TextChannel tc = previousTrack.getChannel();
+                if (tc != null && tc.canTalk())
+                    tc.sendMessage("Queue has ended, disconnecting from voice channel...").queue();
+            }
         }
     }
 

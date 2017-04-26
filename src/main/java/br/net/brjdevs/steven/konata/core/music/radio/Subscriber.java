@@ -5,11 +5,17 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
-
 public class Subscriber implements AudioSendHandler {
-    private Deque<AudioFrame> buffer = new ConcurrentLinkedDeque<>();
+    private DequeBuffer<AudioFrame> buffer = new DequeBuffer<>(() -> {
+        if (getActiveVoiceChannel() != null
+                && !KonataBot.getInstance().getMusicManager().getRadioFeeder().isPlaying()
+                && !getActiveVoiceChannel().getMembers().isEmpty()) {
+            disconnect();
+        }
+        if (getActiveVoiceChannel() == null || getActiveVoiceChannel().getMembers().isEmpty()) {
+            KonataBot.getInstance().getMusicManager().getRadioFeeder().getSubscribers().remove(this);
+        }
+    });
     private AudioFrame lastFrame;
     private long activeVoiceChannel;
     private int shardId;
@@ -26,8 +32,12 @@ public class Subscriber implements AudioSendHandler {
     public void connect() {
         VoiceChannel voiceChannel = getActiveVoiceChannel();
         voiceChannel.getGuild().getAudioManager().openAudioConnection(voiceChannel);
-        if (voiceChannel.getGuild().getAudioManager().getSendingHandler() == null)
+        if (voiceChannel.getGuild().getAudioManager().getSendingHandler() == null || !(voiceChannel.getGuild().getAudioManager().getSendingHandler() instanceof Subscriber))
             voiceChannel.getGuild().getAudioManager().setSendingHandler(this);
+    }
+
+    public void disconnect() {
+        getActiveVoiceChannel().getGuild().getAudioManager().closeAudioConnection();
     }
 
     public boolean isConnected() {
@@ -41,7 +51,7 @@ public class Subscriber implements AudioSendHandler {
         buffer.add(frame);
     }
 
-    public Deque<AudioFrame> getBuffer() {
+    public DequeBuffer<AudioFrame> getBuffer() {
         return buffer;
     }
     @Override

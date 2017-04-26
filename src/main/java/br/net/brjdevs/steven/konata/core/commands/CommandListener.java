@@ -16,7 +16,7 @@ public class CommandListener extends EventListener<MessageReceivedEvent> {
     public void onEvent(MessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getAuthor().isFake())
             return;
-        String prefix, msg = event.getMessage().getRawContent();
+        String prefix, msg = event.getMessage().getRawContent().toLowerCase();
         GuildData guild = KonataBot.getInstance().getDataManager().getGuild(event.getGuild());
         if (msg.startsWith(prefix = KonataBot.getInstance().getConfig().defaultPrefix) || guild.getCustomPrefix() != null && msg.startsWith(prefix = guild.getCustomPrefix())) {
             String fprefix = prefix, alias = msg.substring(fprefix.length()).split(" ")[0];
@@ -24,7 +24,7 @@ public class CommandListener extends EventListener<MessageReceivedEvent> {
             if (cmd == null)
                 return;
             new Thread(() ->
-                KonataBot.getInstance().getCommandManager().invoke(new CommandEvent(cmd, event, msg.substring(fprefix.length() + alias.length()).trim()))
+                KonataBot.getInstance().getCommandManager().invoke(new CommandEvent(cmd, event, event.getMessage().getRawContent().substring(fprefix.length() + alias.length()).trim()))
             ).start();
         }
     }

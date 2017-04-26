@@ -10,14 +10,15 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class InteractiveChoice {
-    private static TLongObjectMap<InteractiveChoice> interactiveChoices = new TLongObjectHashMap<>();
+    public static TLongObjectMap<InteractiveChoice> interactiveChoices = new TLongObjectHashMap<>();
 
     static {
         TaskManager.startAsyncTask("Interactive Choice Expirator", (service) -> {
-            for (long l : interactiveChoices.keys()) {
+            for (long l : interactiveChoices.keys().clone()) {
                 InteractiveChoice i = interactiveChoices.get(l);
                 if (i.waitUntil < System.currentTimeMillis()) {
-
+                    i.getListener().onTimeOut(i);
+                    interactiveChoices.remove(l);
                 }
             }
         }, 5);

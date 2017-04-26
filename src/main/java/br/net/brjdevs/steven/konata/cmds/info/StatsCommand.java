@@ -32,6 +32,7 @@ public class StatsCommand {
                 .setName("Status Command")
                 .setDescription("View the bot, shard and other status!")
                 .setUsageInstruction("stats [bot/shard/guilds/cmds]")
+                .setCategory(Category.INFORMATIVE)
                 .setAction((event) -> {
                     String[] args = StringUtils.splitArgs(event.getArguments(), 2);
                     if (args.length == 0)
@@ -62,6 +63,7 @@ public class StatsCommand {
                             break;
                         case "shard":
                         case "shards":
+                        case "shardinfo":
 
                             if (args.length < 2) {
                                 int connectedShards = KonataBot.getInstance().getConnectedShards().length;
@@ -73,24 +75,34 @@ public class StatsCommand {
                                         "\n\n" + (connectedShards != KonataBot.getInstance().getShards().length ? "- " +(KonataBot.getInstance().getShards().length - connectedShards) + " shards are not connected." : "+ All shards are connected.") + "```"
                                 ).queue();
                                 break;
-                            } else if (!args[1].matches("0-9")) {
-                                event.sendMessage(Emojis.NO_GOOD + " That's not a valid shard id.").queue();
+                            } else if (!args[1].matches("[0-9]+")) {
+                                event.sendMessage(Emojis.X + " That's not a valid shard id.").queue();
                                 break;
                             } else {
                                 int i = Integer.parseInt(args[1]);
                                 Shard shard = KonataBot.getInstance().getShards()[i];
                                 event.sendMessage("```prolog\n Shard [ " + shard.getId() + " / " + shard.getShardTotal() + " ]\n" +
-                                        "       Last event: " + StringUtils.parseTime(System.currentTimeMillis() - KonataBot.getInstance().getLastEvents().get(shard.getId())) +
-                                        "       Guilds: " + shard.getJDA().getGuilds().size() +
-                                        "       Users: " + shard.getJDA().getUsers().size() +
-                                        "       Text Channels: " + shard.getJDA().getTextChannels().size() +
-                                        "       Voice Channels: " + shard.getJDA().getVoiceChannels().size() +
+                                        "       Status: " + shard.getJDA().getStatus() + "\n" +
+                                        "       Last Event: " + StringUtils.parseTime(System.currentTimeMillis() - KonataBot.getInstance().getLastEvents().get(shard.getId())) + "\n" +
+                                        "       Guilds: " + shard.getJDA().getGuilds().size() + "\n" +
+                                        "       Users: " + shard.getJDA().getUsers().size() + "\n" +
+                                        "       Text Channels: " + shard.getJDA().getTextChannels().size() + "\n" +
+                                        "       Voice Channels: " + shard.getJDA().getVoiceChannels().size() + "\n" +
                                         "       Voice Connections: " + shard.getJDA().getGuilds().stream().filter(guild -> guild.getAudioManager().isConnected()).count() +
                                         "```"
                                 ).queue();
                             }
                             break;
+                        case "technical":
+                            embedBuilder = new EmbedBuilder();
+                            embedBuilder.setAuthor("Konata resource usage stats", null, event.getJDA().getSelfUser().getEffectiveAvatarUrl());
+                            embedBuilder.addField("CPU Usage", String.format("%.2f", SessionMonitor.getCPUUsage()) + "%", true);
+                            embedBuilder.addField("Threads", String.valueOf(SessionMonitor.getThreadCount()), true);
+                            embedBuilder.addField("RAM (USAGE/MAX)", String.valueOf(SessionMonitor.getTotalMemory() - SessionMonitor.getFreeMemory()) + "MB / " + String.valueOf(SessionMonitor.getMaxMemory()) + "MB", true);
+                            embedBuilder.setColor(Color.decode("#388BDF"));
 
+                            event.sendMessage(embedBuilder.build()).queue();
+                            break;
                     }
                 })
                 .build();
@@ -102,6 +114,7 @@ public class StatsCommand {
     public static ICommand ping() {
         return new ICommand.Builder()
                 .setCategory(Category.INFORMATIVE)
+                .setAliases("ping")
                 .setName("Ping Command")
                 .setDescription("Pong.")
                 .setAction((event) -> {

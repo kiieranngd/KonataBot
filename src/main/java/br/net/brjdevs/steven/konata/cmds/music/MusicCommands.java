@@ -1,6 +1,7 @@
 package br.net.brjdevs.steven.konata.cmds.music;
 
 import br.net.brjdevs.steven.konata.KonataBot;
+import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.music.*;
@@ -30,6 +31,7 @@ public class MusicCommands {
                 .setUsageInstruction("play <search_term> //searches on youtube and play\n" +
                         "play <url> //plays the url\n")
                 .setPrivateAvailable(false)
+                .setCategory(Category.MUSIC)
                 .setAction((event) -> {
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
                     if (feeder.isSubscribed(event.getGuild())) {
@@ -49,6 +51,7 @@ public class MusicCommands {
                 .setDescription("Selects the first song from a query and plays it.")
                 .setUsageInstruction("forceplay <search_term> //searches on youtube and play\n" +
                         "forceplay <url> //plays the url\n")
+                .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
@@ -68,6 +71,7 @@ public class MusicCommands {
                 .setName("Skip Command")
                 .setDescription("Skips the current song!")
                 .setUsageInstruction("skip //skips the current track")
+                .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
@@ -101,13 +105,19 @@ public class MusicCommands {
                 .setDescription("Lists all the tracks in the queue.")
                 .setUsageInstruction("queue <page> //lists the queue page\n" +
                         "queue remove <track_index> //removes a track from the queue")
+                .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
+                    RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
                     String[] args = event.getArguments().split(" ");
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
                     switch (args[0]) {
                         case "remove":
                         case "rmtrack":
+                            if (feeder.isSubscribed(event.getGuild())) {
+                                event.sendMessage(Emojis.NO_GOOD + " You cannot remove tracks in radio mode!").queue();
+                                return;
+                            }
                             if (args.length == 1) {
                                 event.sendMessage(Emojis.X + " You have to tell me the song queue position!").queue();
                                 return;
@@ -129,7 +139,10 @@ public class MusicCommands {
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed `" + trackContext.getTrack().getInfo().title + "` from queue!").queue();
                             break;
                         default:
-                            int maxPages = (scheduler.getQueue().size() / 15) + (scheduler.getQueue().size() % 15 == 0 ? 0 : 1);
+                            if (feeder.isSubscribed(event.getGuild())) {
+
+                            }
+                            int maxPages = (scheduler.getQueue().size() / 10) + (scheduler.getQueue().size() % 10 == 0 ? 0 : 1);
                             int page = 1;
                             if (args[0].matches("[0-9]+")) {
                                 page = Integer.parseInt(args[0]);
@@ -138,21 +151,41 @@ public class MusicCommands {
                                     return;
                                 }
                             }
-                            int max = page * 15, min = max - 15;
+                            int max = page * 10, min = max - 10;
 
                             List<KonataTrackContext> tracks = new ArrayList<>(scheduler.getQueue());
                             KonataTrackContext currentTrack = scheduler.getCurrentTrack();
                             EmbedBuilder eb = new EmbedBuilder();
                             eb.setAuthor("Queue for guild " + event.getGuild().getName() + " - Page " + page + "/" + maxPages, null, event.getGuild().getIconUrl());
-                            eb.setDescription("Now playing: " + currentTrack.getTrack().getInfo().title + " - `" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "` " + (currentTrack.getDJ() != null ? "\n\u00ad          \u00adDJ: **" + StringUtils.toString(currentTrack.getDJ()) + "**" : "") + "\n\n" + tracks.stream().filter(track -> {
+                            eb.setDescription("__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" + tracks.stream().filter(track -> {
                                 int index = tracks.indexOf(track);
                                 return index < max && index >= min;
-                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** " + track.getTrack().getInfo().title + " - `" + AudioUtils.format(track.getTrack().getDuration()) + "` " + (track.getDJ() != null ? "\n\u00AD      \u00ADDJ: **" + StringUtils.toString(track.getDJ()) + "**" : "")).collect(Collectors.joining("\n")));
+                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** " + track.getTrack().getInfo().title + " (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
                             eb.setFooter("Total queue size: " + tracks.size() + " songs (Total estimated time: " + AudioUtils.format(tracks.stream().mapToLong(track -> track.getTrack().getDuration()).sum()) + ")", null);
                             eb.setColor(Color.decode("#388BDF"));
                             event.sendMessage(eb.build()).queue();
                             break;
                     }
+                })
+                .build();
+    }
+
+    @RegisterCommand
+    public static ICommand stop() {
+        return new ICommand.Builder()
+                .setAliases("stop")
+                .setName("Stop Command")
+                .setDescription("Stops the current track and clear the queue.")
+                .setCategory(Category.MUSIC)
+                .setAction((event) -> {
+                    RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
+                    if (feeder.isSubscribed(event.getGuild())) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot stop the queue in radio mode!").queue();
+                        return;
+                    }
+                    int removedSongs = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().stop();
+                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Stopped the current track and removed " + removedSongs + " songs from queue.").queue();
+
                 })
                 .build();
     }
@@ -165,6 +198,7 @@ public class MusicCommands {
                 .setUsageInstruction("radio //returns whether the radio mode is enabled or not\n" +
                         "radio toggle //toggles the radio mode")
                 .setRequiredPermission(Permission.MANAGE_SERVER)
+                .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();

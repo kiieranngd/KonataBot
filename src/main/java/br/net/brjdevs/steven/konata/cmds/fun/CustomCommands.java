@@ -51,7 +51,7 @@ public class CustomCommands {
                             }
                             EmbedBuilder eb = new EmbedBuilder();
                             eb.setColor(Color.decode("#388BDF"));
-                            int maxPages = (data.getCustomCommands().size() / 15) + (data.getCustomCommands().size() % 15 == 0 ? 0 : 1);
+                            int maxPages = (data.getCustomCommands().size() / 10) + (data.getCustomCommands().size() % 10 == 0 ? 0 : 1);
                             int page = 1;
                             if (args.length > 1 && args[1].matches("[0-9]+")) {
                                 page = Integer.parseInt(args[1]);
@@ -61,7 +61,7 @@ public class CustomCommands {
                                 }
                             }
                             eb.setAuthor("Custom commands list for " + event.getGuild().getName() + " - Page " + page + "/" + maxPages, null, event.getGuild().getIconUrl());
-                            int max = page * 15, min = max - 15;
+                            int max = page * 10, min = max - 10;
                             eb.setDescription(commands.stream().filter(cmd -> {
                                 int index = commands.indexOf(cmd);
                                 return index < max && index >= min;
