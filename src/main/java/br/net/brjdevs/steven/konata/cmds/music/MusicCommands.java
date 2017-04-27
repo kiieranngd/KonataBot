@@ -76,7 +76,7 @@ public class MusicCommands {
     @RegisterCommand
     public static ICommand skip() {
         return new ICommand.Builder()
-                .setAliases("skip")
+                .setAliases("skip", "s")
                 .setName("Skip Command")
                 .setDescription("Skips the current song!")
                 .setUsageInstruction("skip //skips the current track")
@@ -103,6 +103,33 @@ public class MusicCommands {
                         }
                         event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Your vote to skip this song has been submitted. More " + (requiredVotes - voteSkips.size()) + " votes are required to skip.").queue();
                     }
+                })
+                .build();
+    }
+
+
+    @RegisterCommand
+    public static ICommand forceskip() {
+        return new ICommand.Builder()
+                .setAliases("forceskip", "fs")
+                .setName("Force Skip Command")
+                .setDescription("Skips the current song without votes!")
+                .setUsageInstruction("fs //skips the current track")
+                .setCategory(Category.MUSIC)
+                .setPrivateAvailable(false)
+                .setAction((event) -> {
+                    RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
+                    if (feeder.isSubscribed(event.getGuild())) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot skip songs in the radio mode!").queue();
+                        return;
+                    }
+                    if (!isDJ(event.getMember())) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        return;
+                    }
+                    TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
+                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Skipping...").queue();
+                    scheduler.skip();
                 })
                 .build();
     }

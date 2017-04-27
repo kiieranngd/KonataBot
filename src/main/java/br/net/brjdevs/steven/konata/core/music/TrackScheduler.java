@@ -98,6 +98,8 @@ public class TrackScheduler extends AudioEventAdapter {
             if (repeatMode == RepeatMode.QUEUE && previousTrack != null)
                 queue.offer(previousTrack.makeClone());
         }
+        if (currentTrack == null)
+            onQueueEnd();
     }
 
     public void offer(KonataTrackContext trackContext) {
@@ -135,6 +137,13 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
+    private void onQueueEnd() {
+        getGuild().getAudioManager().closeAudioConnection();
+        TextChannel tc = previousTrack.getChannel();
+        if (tc != null && tc.canTalk())
+            tc.sendMessage("Queue has ended, disconnecting from voice channel...").queue();
+    }
+
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         voteSkips.clear();
@@ -146,10 +155,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (endReason.mayStartNext) {
             startNext(false);
             if (currentTrack == null) {
-                getGuild().getAudioManager().closeAudioConnection();
-                TextChannel tc = previousTrack.getChannel();
-                if (tc != null && tc.canTalk())
-                    tc.sendMessage("Queue has ended, disconnecting from voice channel...").queue();
+                onQueueEnd();
             }
         }
     }

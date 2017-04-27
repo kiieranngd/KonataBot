@@ -22,11 +22,11 @@
         </encoder>
     </appender>
 
-    <!--<appender name="DISCORD" class="net.kodehawa.mantarobot.log.DiscordLogBack"/> -->
+    <appender name="DISCORD" class="br.net.brjdevs.steven.konata.log.DiscordLogBack"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
-        <!--<appender-ref ref="DISCORD"/> -->
+        <appender-ref ref="DISCORD"/>
     </root>
 </configuration>

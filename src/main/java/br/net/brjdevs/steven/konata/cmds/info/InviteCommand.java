@@ -2,9 +2,12 @@ package br.net.brjdevs.steven.konata.cmds.info;
 
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
+import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import net.dv8tion.jda.core.EmbedBuilder;
 
 public class InviteCommand {
+
+    @RegisterCommand
     public static ICommand invite() {
         return new ICommand.Builder()
                 .setAliases("invite", "inviteme")

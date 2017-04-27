@@ -6,6 +6,8 @@ import br.net.brjdevs.steven.konata.core.data.Config;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.events.EventManager;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
+import br.net.brjdevs.steven.konata.log.DiscordLogBack;
+import br.net.brjdevs.steven.konata.log.SimpleLogToSLF4JAdapter;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -115,6 +117,7 @@ public class KonataBot {
     public static void main(String[] args) {
         try {
             RestAction.LOG.setLevel(SimpleLog.Level.OFF); // I don't want my log full of useless errors.
+            SimpleLogToSLF4JAdapter.install();
 
             long l = System.currentTimeMillis();
             LOAD_STATE = LoadState.PRELOAD;
@@ -145,6 +148,8 @@ public class KonataBot {
                 instance.shards[i] = new Shard(i, shardTotal);
             }
             LOGGER.info("Finished loading all shards!");
+
+            DiscordLogBack.enable();
 
             LOAD_STATE = LoadState.LOADED;
 

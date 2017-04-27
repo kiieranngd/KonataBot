@@ -3,8 +3,10 @@ package br.net.brjdevs.steven.konata.cmds.botAdmin;
 import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.music.GuildMusicManager;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class RebootCommand {
 
@@ -45,10 +47,18 @@ public class RebootCommand {
 
     private static void prepareShutdown(boolean shutdown) {
         KonataMusicManager musicManager = KonataBot.getInstance().getMusicManager();
-        musicManager.getMusicManagers().valueCollection().stream().filter(manager -> manager.getTrackScheduler().getCurrentTrack() != null && manager.getTrackScheduler().getCurrentTrack().getChannel() != null).forEach(manager -> {
-            manager.getTrackScheduler().getCurrentTrack().getChannel().sendMessage(shutdown ? "Sorry to bother you but I'll shutdown for an unknown period of time, you can keep updated about that joining my support guild." : "I'm going to restart. Be back in a few minutes stronger and better!").queue();
-            manager.getTrackScheduler().stop();
-        });
+        for (long l : new TLongObjectHashMap<>(musicManager.getMusicManagers()).keys()) {
+            try {
+                GuildMusicManager manager = musicManager.getMusicManagers().get(l);
+                musicManager.getMusicManagers().remove(l);
+                if (manager.getTrackScheduler().getCurrentTrack() != null && manager.getTrackScheduler().getCurrentTrack().getChannel() != null) {
+                    manager.getTrackScheduler().getCurrentTrack().getChannel().sendMessage(shutdown ? "Sorry to bother you but I'll shutdown for an unknown period of time, you can keep updated about that joining my support guild." : "I'm going to restart. Be back in a few minutes stronger and better!").queue();
+                    manager.getTrackScheduler().stop();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
         musicManager.getRadioFeeder().getQueue().clear();
         musicManager.getRadioFeeder().getAudioPlayer().stopTrack();
     }
