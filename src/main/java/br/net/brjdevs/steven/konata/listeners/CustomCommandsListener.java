@@ -7,7 +7,13 @@ import br.net.brjdevs.steven.konata.core.events.EventListener;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class CustomCommandsListener extends EventListener<GuildMessageReceivedEvent> {
+
+    private static Pattern RANDOM_PATTERN = Pattern.compile("(\\$random\\{.+?;+.+?})", Pattern.CASE_INSENSITIVE);
 
     public CustomCommandsListener() {
         super(GuildMessageReceivedEvent.class);
@@ -30,6 +36,17 @@ public class CustomCommandsListener extends EventListener<GuildMessageReceivedEv
     }
 
     private String replace(String s, Member member, String args) {
-        return s.replace("%user%", member.getUser().getName()).replace("%mention%", member.getUser().getAsMention()).replace("%guild%", member.getGuild().getName()).replace("%id%", member.getUser().getName()).replace("%input%", args);
+        String replaced = s.replace("%user%", member.getUser().getName()).replace("%mention%", member.getUser().getAsMention()).replace("%guild%", member.getGuild().getName()).replace("%id%", member.getUser().getName()).replace("%input%", args);
+        Matcher matcher = RANDOM_PATTERN.matcher(replaced);
+        while (matcher.find()) {
+            String group = matcher.group(0);
+            String[] options = group.substring(group.indexOf("{") + 1, group.lastIndexOf("}")).split(";");
+            int random = r.nextInt(options.length - 1);
+            group = Pattern.quote(group);
+            replaced = replaced.replaceFirst(group, options[random]);
+        }
+        return replaced;
     }
+
+    private static final Random r = new Random();
 }

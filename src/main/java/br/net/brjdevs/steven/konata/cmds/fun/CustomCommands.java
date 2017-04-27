@@ -136,6 +136,10 @@ public class CustomCommands {
                             data.saveAsync();
                             break;
                         case "rename":
+                            if (args.length < 3) {
+                                event.sendMessage(Emojis.X + " You have to append the new name!").queue();
+                                return;
+                            }
                             String newName = args[2].split(" ")[0];
                             if (!data.getCustomCommands().containsKey(args[1])) {
                                 event.sendMessage("Oops, this guild doesn't have a custom command with that name! " + Emojis.SWEAT_SMILE).queue();

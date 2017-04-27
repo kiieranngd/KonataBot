@@ -43,7 +43,7 @@ public class AnnouncesCommand {
                             break;
                         default:
                             if (announces.getGreeting() == null) {
-                                event.sendMessage("Oops, there's not greeting message set!").queue();
+                                event.sendMessage("Oops, there's not greeting message set! Use `konata greeting set <message>` to set one!").queue();
                             } else {
                                 TextChannel tc = event.getGuild().getTextChannelById(announces.getChannel());
                                 event.sendMessage("The following message will be sent " + (tc != null ? "in " + tc.getAsMention() : "") + " when an user joins this guild:\n\n" + announces.getGreeting() + "\n\nIf you want to change it you can use `konata greeting set [new_message]` and if you'd like to remove it just use `konata greeting reset`.").queue();
@@ -83,7 +83,7 @@ public class AnnouncesCommand {
                         default:
                             tc = event.getGuild().getTextChannelById(announces.getChannel());
                             if (tc == null) {
-                                event.sendMessage("Oops, there's no announce channel set!").queue();
+                                event.sendMessage("Oops, there's no announce channel set! Use `konata announceschannel set #channel` to set one!").queue();
                             } else {
                                 event.sendMessage("The greetings and farewells will be sent in " + tc.getAsMention() + ". If you want to change that, use `konata announceschannel #channel`. " + Emojis.WINK).queue();
                             }
@@ -125,7 +125,7 @@ public class AnnouncesCommand {
                             break;
                         default:
                             if (announces.getFarewell() == null) {
-                                event.sendMessage("Oops, there's not farewell message set!").queue();
+                                event.sendMessage("Oops, there's not farewell message set! Use `konata farewell set <message>` to set one!").queue();
                             } else {
                                 TextChannel tc = event.getGuild().getTextChannelById(announces.getChannel());
                                 event.sendMessage("The following message will be sent " + (tc != null ? "in " + tc.getAsMention() : "") + "when an user leaves this guild:\n\n" + announces.getGreeting() + "\n\nIf you want to change it you can use `konata greeting set [new_message]` and if you'd like to remove it just use `konata greeting reset`.").queue();

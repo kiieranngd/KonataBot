@@ -62,6 +62,6 @@ public class CommandManager {
     }
 
     public static MessageEmbed getHelp(ICommand cmd, JDA jda) {
-        return new EmbedBuilder().setAuthor("Help for Custom Commands", null, jda.getSelfUser().getEffectiveAvatarUrl()).appendDescription("**You have to provide valid arguments to use this command, here's a list with the sub commands:**\n\n").appendDescription(cmd.getUsageInstruction()).setColor(Color.decode("#388BDF")).build();
+        return cmd.getUsageInstruction() == null ? new EmbedBuilder().setDescription("No extended help for this command.").build() : new EmbedBuilder().setAuthor("Help for Custom Commands", null, jda.getSelfUser().getEffectiveAvatarUrl()).appendDescription("**You have to provide valid arguments to use this command, here's a list with the sub commands:**\n\n").appendDescription(cmd.getUsageInstruction()).setColor(Color.decode("#388BDF")).build();
     }
 }

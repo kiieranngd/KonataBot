@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,6 +68,10 @@ public class KonataBot {
 
     public List<TextChannel> getTextChannels() {
         return Stream.of(shards).map(g -> g.getJDA().getTextChannels()).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    public TextChannel getTextChannelById(String id) {
+        return Stream.of(shards).map(g -> g.getJDA().getTextChannelById(id)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     public AtomicLongArray getLastEvents() {

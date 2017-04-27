@@ -7,5 +7,7 @@ public class Emojis {
             RAISED_HAND = "\u270b",
             X = "\u274c",
             BALLOT_CHECK_MARK = "\u2611",
-            CONFUSED = "\uD83D\uDE15";
+            CONFUSED = "\uD83D\uDE15",
+            OK_HAND = "\uD83D\uDC4C",
+            COLD_SWEAT = "\uD83D\uDE30";
 }

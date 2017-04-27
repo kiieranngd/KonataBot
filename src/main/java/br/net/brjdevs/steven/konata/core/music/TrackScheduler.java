@@ -15,6 +15,9 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -40,15 +43,22 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public int getRequiredVotes() {
-        return 0;
+        return (int) ((getGuild().getAudioManager().getConnectedChannel().getMembers().size() - 1) / .65) + 1;
     }
-
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
     }
 
     public BlockingQueue<KonataTrackContext> getQueue() {
         return queue;
+    }
+
+    public void shuffle() {
+        List<KonataTrackContext> tracks = new ArrayList<>();
+        queue.drainTo(tracks);
+        Collections.shuffle(tracks);
+        queue.addAll(tracks);
+        tracks.clear();
     }
 
     public KonataTrackContext getCurrentTrack() {

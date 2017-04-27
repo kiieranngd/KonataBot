@@ -60,46 +60,49 @@ public class PokedexCommand {
 
                     EmbedBuilder embedBuilder = new EmbedBuilder();
 
-                    switch (info) {
-                        case "ability":
-                            String generation = object.getJSONObject("generation").getString("name");
-                            String[] splittedGeneration = generation.split("-");
-                            generation = StringUtils.capitalize(splittedGeneration[0]) + " " + splittedGeneration[1].toUpperCase();
-                            String effect = object.getJSONArray("effect_entries").getJSONObject(0).getString("effect");
-                            List<String> pokemon = new ArrayList<>();
-                            object.getJSONArray("pokemon").forEach((robj) -> {
-                                JSONObject obj = (JSONObject) robj;
-                                pokemon.add((obj.getBoolean("is_hidden") ? "*" : "") + obj.getJSONObject("pokemon").getString("name"));
-                            });
-                            embedBuilder.setTitle(StringUtils.capitalize(info) + " " + (name = StringUtils.capitalize(name)), get.getURI().toString());
-                            embedBuilder.setDescription("First appeared in `" + generation + "`\n\n**Description:** " + effect + "\n\n**Pokemon with " + name + "**: " + pokemon.stream().map(s -> "`" + s + "`").collect(Collectors.joining(", ")) + "\n\n__\\* *Hidden ability*__");
-                            embedBuilder.setFooter("Requested by " + StringUtils.toString(event.getAuthor()), event.getAuthor().getEffectiveAvatarUrl());
-                            event.sendMessage(String.valueOf(embedBuilder.getDescriptionBuilder().length())).queue();
-                            break;
-                        case "pokemon":
-                            int id = object.getInt("id");
-                            String sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
-                            List<String> s = new ArrayList<>();
-                            object.getJSONArray("abilities").forEach(ability -> {
-                                JSONObject o = (JSONObject) ability;
-                                s.add("`" + (o.getBoolean("is_hidden") ? "*" : "") + o.getJSONObject("ability").getString("name") + "`");
-                            });
-                            String abilities = String.join(", ", s) + "\n__\\**Hidden ability*__\n\n";
-                            s.clear();
-                            //HP/atk/def/sp atk/sp def/spd
-                            List<Object> rawStats = object.getJSONArray("stats").toList();
-                            Collections.reverse(rawStats);
-                            String stats = rawStats.stream().map(obj -> String.valueOf(((Map) obj).get("base_stat"))).collect(Collectors.joining("/"));
-                            embedBuilder.setThumbnail(sprite);
-                            embedBuilder.setTitle(StringUtils.capitalize(info) + " " + StringUtils.capitalize(name), get.getURI().toString());
-                            embedBuilder.appendDescription("Pokedex ID: " + id + "\n\n\n**Base stats:** " + stats + "\n\n**Abilities:** " + abilities);
-                            embedBuilder.appendDescription("**Types:** " + object.getJSONArray("types").toList().stream().map(obj -> StringUtils.capitalize((String) ((Map) ((Map) obj).get("type")).get("name"))).collect(Collectors.joining(", ")) + "\n\n");
-                            List<String> list = new ArrayList<>();
-                            object.getJSONArray("moves").forEach(move -> {
-                                list.add("`" + StringUtils.capitalize(((JSONObject) move).getJSONObject("move").getString("name")).replace("-", " ") + "`");
-                            });
-                            embedBuilder.appendDescription("**Moves:** " + String.join(", ", list));
-                            break;
+                    try {
+                        switch (info) {
+                            case "ability":
+                                String generation = object.getJSONObject("generation").getString("name");
+                                String[] splittedGeneration = generation.split("-");
+                                generation = StringUtils.capitalize(splittedGeneration[0]) + " " + splittedGeneration[1].toUpperCase();
+                                String effect = object.getJSONArray("effect_entries").getJSONObject(0).getString("effect");
+                                List<String> pokemon = new ArrayList<>();
+                                object.getJSONArray("pokemon").forEach((robj) -> {
+                                    JSONObject obj = (JSONObject) robj;
+                                    pokemon.add((obj.getBoolean("is_hidden") ? "*" : "") + obj.getJSONObject("pokemon").getString("name"));
+                                });
+                                embedBuilder.setTitle(StringUtils.capitalize(info) + " " + (name = StringUtils.capitalize(name)), get.getURI().toString());
+                                embedBuilder.setDescription("First appeared in `" + generation + "`\n\n**Description:** " + effect + "\n\n**Pokemon with " + name + "**: " + pokemon.stream().map(s -> "`" + s + "`").collect(Collectors.joining(", ")) + "\n\n__\\* *Hidden ability*__");
+                                embedBuilder.setFooter("Requested by " + StringUtils.toString(event.getAuthor()), event.getAuthor().getEffectiveAvatarUrl());
+                                break;
+                            case "pokemon":
+                                int id = object.getInt("id");
+                                String sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+                                List<String> s = new ArrayList<>();
+                                object.getJSONArray("abilities").forEach(ability -> {
+                                    JSONObject o = (JSONObject) ability;
+                                    s.add("`" + (o.getBoolean("is_hidden") ? "*" : "") + o.getJSONObject("ability").getString("name") + "`");
+                                });
+                                String abilities = String.join(", ", s) + "\n__\\**Hidden ability*__\n\n";
+                                s.clear();
+                                //HP/atk/def/sp atk/sp def/spd
+                                List<Object> rawStats = object.getJSONArray("stats").toList();
+                                Collections.reverse(rawStats);
+                                String stats = rawStats.stream().map(obj -> String.valueOf(((Map) obj).get("base_stat"))).collect(Collectors.joining("/"));
+                                embedBuilder.setThumbnail(sprite);
+                                embedBuilder.setTitle(StringUtils.capitalize(info) + " " + StringUtils.capitalize(name), get.getURI().toString());
+                                embedBuilder.appendDescription("Pokedex ID: " + id + "\n\n\n**Base stats:** " + stats + "\n\n**Abilities:** " + abilities);
+                                embedBuilder.appendDescription("**Types:** " + object.getJSONArray("types").toList().stream().map(obj -> StringUtils.capitalize((String) ((Map) ((Map) obj).get("type")).get("name"))).collect(Collectors.joining(", ")) + "\n\n");
+                                List<String> list = new ArrayList<>();
+                                object.getJSONArray("moves").forEach(move -> {
+                                    list.add("`" + StringUtils.capitalize(((JSONObject) move).getJSONObject("move").getString("name")).replace("-", " ") + "`");
+                                });
+                                embedBuilder.appendDescription("**Moves:** " + String.join(", ", list));
+                                break;
+                        }
+                    } catch (Exception e) {
+                        event.sendMessage("Um... I didn't find a" + (info.equals("ability") ? "n" : "") + " " + info + " matching that criteria or pokeapi is offline.").queue();
                     }
 
                     event.sendMessage(embedBuilder.build()).queue();

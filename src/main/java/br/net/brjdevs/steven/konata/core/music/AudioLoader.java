@@ -14,8 +14,13 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class AudioLoader implements AudioLoadResultHandler {
 
+    private static final ExecutorService service = Executors.newSingleThreadExecutor();
     public static final long MAX_SONG_LENGTH = 10800000, MAX_PLAYLIST_LENGTH = 54000000;
 
     public static void loadAndPlay(User user, TextChannel tc, String search, boolean force) {
@@ -74,7 +79,7 @@ public class AudioLoader implements AudioLoadResultHandler {
                                 message.editMessage("Well, `" + s + "` doesn't look like a valid option " + Emojis.SWEAT_SMILE).queue())
                         .onValidResonse((interactiveChoice, s) -> {
                             message.delete().queue();
-                            trackLoaded(options[Integer.parseInt(s) - 1]);
+                            service.submit(() -> trackLoaded(options[Integer.parseInt(s) - 1]));
                         })
                         .onTimeout((interactiveChoice) -> message.editMessage("\u23f1 You didn't reply in 30 seconds, query canceled!").queue())
                         .build()

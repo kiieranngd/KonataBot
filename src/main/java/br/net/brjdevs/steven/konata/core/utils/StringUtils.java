@@ -8,6 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils {
+
+    private static final String ACTIVE_BLOCK = "\u2588";
+    private static final String EMPTY_BLOCK = "\u00AD";
+
     private static final Pattern PATTERN = Pattern.compile("\"([^\"]*)\"|'([^']*)'|[^\\s]+");
 
     public static String[] splitArgs(String input, int size) {
@@ -62,5 +66,12 @@ public class StringUtils {
 
     public static String capitalize(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
+    public static String getProgressBar(long percent) {
+        int activeBlocks = (int) ((float) percent / (float) 100 * 10f);
+        StringBuilder builder = new StringBuilder().append(EMPTY_BLOCK);
+        for (int i = 0; i < 10; i++) builder.append(activeBlocks >= i ? ACTIVE_BLOCK : ' ');
+        return builder.append(EMPTY_BLOCK).toString();
     }
 }
