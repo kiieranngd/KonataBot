@@ -43,7 +43,9 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public int getRequiredVotes() {
-        return (int) ((getGuild().getAudioManager().getConnectedChannel().getMembers().size() - 1) / .65) + 1;
+        int listeners = (int) getGuild().getAudioManager().getConnectedChannel().getMembers().stream()
+                .filter(m -> !m.getUser().isBot()).count();
+        return (int) Math.ceil(listeners * .55);
     }
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;

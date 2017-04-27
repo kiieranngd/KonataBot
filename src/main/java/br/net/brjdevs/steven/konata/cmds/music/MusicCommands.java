@@ -98,10 +98,10 @@ public class MusicCommands {
                         voteSkips.add(event.getAuthor().getIdLong());
                         if (voteSkips.size() >= requiredVotes) {
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reached required amount of votes, skipping...").queue();
+                            scheduler.skip();
                             return;
                         }
                         event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Your vote to skip this song has been submitted. More " + (requiredVotes - voteSkips.size()) + " votes are required to skip.").queue();
-                        scheduler.skip();
                     }
                 })
                 .build();
