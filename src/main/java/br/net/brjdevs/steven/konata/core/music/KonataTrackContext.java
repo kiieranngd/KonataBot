@@ -18,7 +18,7 @@ public class KonataTrackContext {
     }
 
     public KonataTrackContext makeClone() {
-        track.makeClone();
+        track = track.makeClone();
         return this;
     }
 

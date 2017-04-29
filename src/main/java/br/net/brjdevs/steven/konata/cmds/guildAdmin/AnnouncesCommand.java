@@ -71,12 +71,12 @@ public class AnnouncesCommand {
                     switch (s[0]) {
                         case "set":
                             TextChannel tc = event.getMessage().getMentionedChannels().isEmpty() ? ((TextChannel) event.getChannel()) : event.getMessage().getMentionedChannels().get(0);
-                            announces.setChannel(tc.getIdLong());
+                            announces.setChannel(tc.getId());
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Now the greetings and farewells will be sent in " + tc.getAsMention()).queue();
                             announces.saveAsync();
                             break;
                         case "reset":
-                            announces.setChannel(0);
+                            announces.setChannel(null);
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed the greetings and farewells channel.").queue();
                             announces.saveAsync();
                             break;

@@ -52,7 +52,7 @@ public class RebootCommand {
                 GuildMusicManager manager = musicManager.getMusicManagers().get(l);
                 musicManager.getMusicManagers().remove(l);
                 if (manager.getTrackScheduler().getCurrentTrack() != null && manager.getTrackScheduler().getCurrentTrack().getChannel() != null) {
-                    manager.getTrackScheduler().getCurrentTrack().getChannel().sendMessage(shutdown ? "Sorry to bother you but I'll shutdown for an unknown period of time, you can keep updated about that joining my support guild." : "I'm going to restart. Be back in a few minutes stronger and better!").queue();
+                    manager.getTrackScheduler().getCurrentTrack().getChannel().sendMessage(shutdown ? "Sorry to bother you but I'll shutdown for an unknown period of time, you can keep updated about that joining my support guild." : "I'm going to restart. Be back in a few minutes stronger and better!").complete();
                     manager.getTrackScheduler().stop();
                 }
             } catch (Exception ignored) {

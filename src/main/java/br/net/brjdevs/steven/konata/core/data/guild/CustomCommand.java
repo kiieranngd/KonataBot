@@ -12,12 +12,12 @@ import java.util.Random;
 public class CustomCommand {
     private static final Random r = new Random();
 
-    private String name;
+    private String name, creator;
     private List<String> answers;
-    private long creator, creationDate;
+    private long creationDate;
 
     @ConstructorProperties({"name", "answers", "creator", "creationDate"})
-    public CustomCommand(String name, List<String> answers, long creator, long creationDate) {
+    public CustomCommand(String name, List<String> answers, String creator, long creationDate) {
         this.name = name;
         this.answers = answers;
         this.creator = creator;
@@ -27,7 +27,7 @@ public class CustomCommand {
     public CustomCommand(String name, String firstAnswer, User creator) {
         this.name = name;
         this.answers = new ArrayList<>(Arrays.asList(firstAnswer));
-        this.creator = creator.getIdLong();
+        this.creator = creator.getId();
         this.creationDate = System.currentTimeMillis();
     }
 
@@ -39,7 +39,7 @@ public class CustomCommand {
         return answers;
     }
 
-    public long getCreator() {
+    public String getCreator() {
         return creator;
     }
 

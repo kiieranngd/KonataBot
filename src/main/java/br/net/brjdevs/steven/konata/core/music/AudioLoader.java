@@ -107,6 +107,6 @@ public class AudioLoader implements AudioLoadResultHandler {
     }
     @Override
     public void loadFailed(FriendlyException exception) {
-        channel.sendMessage("Well, this is embarrassing. I failed to load the song " + Emojis.SWEAT_SMILE).queue();
+        channel.sendMessage("Well, this is embarrassing. I failed to load the song: `" + exception.getMessage() + "` " + Emojis.SWEAT_SMILE).queue();
     }
 }

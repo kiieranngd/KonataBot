@@ -74,4 +74,8 @@ public class StringUtils {
         for (int i = 0; i < 10; i++) builder.append(activeBlocks >= i ? ACTIVE_BLOCK : ' ');
         return builder.append(EMPTY_BLOCK).toString();
     }
+
+    public static String escapeFormatting(String message) {
+        return message.replace("*", "\\*").replace("_", "\\_").replace("~", "\\~").replace("`", "\\`");
+    }
 }

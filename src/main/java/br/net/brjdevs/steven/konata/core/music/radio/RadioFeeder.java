@@ -159,6 +159,9 @@ public class RadioFeeder extends AudioEventAdapter {
         subscribers.removeAll(toUnregister);
     }
 
+    public RadioTrack getCurrentTrack() {
+        return currentTrack;
+    }
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         LOGGER.info("Got onTrackException at track `" + track.getInfo().title + "`");

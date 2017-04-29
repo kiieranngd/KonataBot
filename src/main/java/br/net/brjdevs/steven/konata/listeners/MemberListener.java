@@ -20,13 +20,13 @@ public class MemberListener extends EventListener<GenericGuildMemberEvent> {
         if (event instanceof GuildMemberJoinEvent) {
             Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
             TextChannel textChannel;
-            if (announces.getGreeting() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
+            if (announces.getGreeting() == null || announces.getChannel() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
                 return;
             textChannel.sendMessage(replace(announces.getGreeting(), event.getMember(), event.getGuild())).queue();
         } else if (event instanceof GuildMemberLeaveEvent) {
             Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
             TextChannel textChannel;
-            if (announces.getFarewell() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
+            if (announces.getFarewell() == null || announces.getChannel() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
                 return;
             textChannel.sendMessage(replace(announces.getFarewell(), event.getMember(), event.getGuild())).queue();
         }

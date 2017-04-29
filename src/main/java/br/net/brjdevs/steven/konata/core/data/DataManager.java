@@ -35,7 +35,7 @@ public class DataManager {
     public GuildData getGuild(Guild guild) {
         long id = guild.getIdLong();
         if (guilds.containsKey(id))
-            return guilds.get(id);
+            return guilds.getData(id);
         Table table = r.table(GuildData.DB_TABLE);
         GuildData guildData;
         if ((guildData = mapper.convertValue(table.get(guild.getId()).run(conn()), GuildData.class)) != null) {
@@ -55,7 +55,7 @@ public class DataManager {
         if ((announces = mapper.convertValue(table.get(guild.getId()).run(conn()), Announces.class)) != null) {
             return announces;
         } else {
-            announces = new Announces(guild.getId(), null, null, 0);
+            announces = new Announces(guild.getId(), null, null,null);
             return announces;
 
         }

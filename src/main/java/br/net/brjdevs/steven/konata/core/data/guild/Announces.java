@@ -12,12 +12,10 @@ public class Announces implements DBObject {
 
     public static final String DB_TABLE = "announces";
 
-    private final String id;
-    private String greeting, farewell;
-    private long channel;
+    private String id, greeting, farewell, channel;
 
     @ConstructorProperties({"id", "greeting", "farewell", "channel"})
-    public Announces(String id, String greeting, String farewell, long channel) {
+    public Announces(String id, String greeting, String farewell, String channel) {
         this.id = id;
         this.greeting = greeting;
         this.farewell = farewell;
@@ -30,13 +28,13 @@ public class Announces implements DBObject {
     public String getGreeting() {
         return greeting;
     }
-    public long getChannel() {
+    public String getChannel() {
         return channel;
     }
     public String getId() {
         return id;
     }
-    public void setChannel(long channel) {
+    public void setChannel(String channel) {
         this.channel = channel;
     }
     public void setFarewell(String farewell) {

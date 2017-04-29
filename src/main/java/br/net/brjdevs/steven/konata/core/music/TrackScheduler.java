@@ -88,14 +88,14 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void startNext(boolean isSkipped) {
-        if (repeatMode == RepeatMode.SONG && !isSkipped && currentTrack != null) {
-            audioPlayer.startTrack(currentTrack.getTrack().makeClone(), false);
+        if (RepeatMode.SONG == repeatMode && !isSkipped && currentTrack != null) {
+            audioPlayer.startTrack(currentTrack.makeClone().getTrack(), false);
         } else {
             if (currentTrack != null)
                 previousTrack = currentTrack;
             currentTrack = queue.poll();
             audioPlayer.startTrack(currentTrack == null ? null : currentTrack.getTrack(), false);
-            if (repeatMode == RepeatMode.QUEUE && previousTrack != null)
+            if (RepeatMode.QUEUE == repeatMode && previousTrack != null)
                 queue.offer(previousTrack.makeClone());
         }
         if (currentTrack == null)
@@ -105,7 +105,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void offer(KonataTrackContext trackContext) {
         this.queue.offer(trackContext);
         if (audioPlayer.getPlayingTrack() == null)
-            startNext(true);
+            startNext(false);
     }
 
     public TLongList getVoteSkips() {
@@ -119,7 +119,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public int stop() {
         int removedSongs = queue.size();
         queue.clear();
-        audioPlayer.stopTrack();
+        startNext(true);
         return removedSongs;
     }
 
@@ -154,9 +154,6 @@ public class TrackScheduler extends AudioEventAdapter {
         }
         if (endReason.mayStartNext) {
             startNext(false);
-            if (currentTrack == null) {
-                onQueueEnd();
-            }
         }
     }
 
@@ -167,6 +164,7 @@ public class TrackScheduler extends AudioEventAdapter {
             String msg = ":fearful: Failed to play " + track.getInfo().title + ": `" + exception.getMessage() + "`";
             channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
         }
+        track.stop();
     }
 
     @Override
@@ -176,6 +174,7 @@ public class TrackScheduler extends AudioEventAdapter {
             String msg = "Track got stuck, skipping...";
             channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
         }
+        track.stop();
     }
 
     public enum RepeatMode {

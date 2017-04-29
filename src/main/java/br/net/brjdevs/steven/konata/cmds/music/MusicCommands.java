@@ -6,6 +6,7 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.music.*;
 import br.net.brjdevs.steven.konata.core.music.radio.RadioFeeder;
+import br.net.brjdevs.steven.konata.core.music.radio.RadioTrack;
 import br.net.brjdevs.steven.konata.core.music.radio.Subscriber;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
@@ -26,7 +27,7 @@ public class MusicCommands {
     @RegisterCommand
     public static ICommand play() {
         return new ICommand.Builder()
-                .setAliases("play")
+                .setAliases("play", "p")
                 .setName("Play Command")
                 .setDescription("Play songs.")
                 .setUsageInstruction("play <search_term> //searches on youtube and play\n" +
@@ -37,6 +38,10 @@ public class MusicCommands {
                     if (event.getArguments().isEmpty()) {
                         event.sendMessage("You have to tell me a song to play!").queue();
                         return;
+                    } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
+                        event.sendMessage("You are not connected to the channel I am playing!").queue();
+                        return;
+
                     }
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
                     if (feeder.isSubscribed(event.getGuild())) {
@@ -62,6 +67,10 @@ public class MusicCommands {
                     if (event.getArguments().isEmpty()) {
                         event.sendMessage("You have to tell me a song to play!").queue();
                         return;
+                    } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
+                        event.sendMessage("You are not connected to the channel I am playing!").queue();
+                        return;
+
                     }
                     RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
                     if (feeder.isSubscribed(event.getGuild())) {
@@ -87,21 +96,28 @@ public class MusicCommands {
                     if (feeder.isSubscribed(event.getGuild())) {
                         event.sendMessage(Emojis.NO_GOOD + " You cannot skip songs in the radio mode!").queue();
                         return;
+                    } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
+                        event.sendMessage("I'm not playing anything!").queue();
+                        return;
+                    } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
+                        event.sendMessage("You are not connected to the channel I am playing!").queue();
+                        return;
+
                     }
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
                     TLongList voteSkips = scheduler.getVoteSkips();
                     int requiredVotes = scheduler.getRequiredVotes();
                     if (voteSkips.contains(event.getAuthor().getIdLong())) {
                         voteSkips.remove(event.getAuthor().getIdLong());
-                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Well, you already voted to skip this song so I removed your vote. More " + (requiredVotes - voteSkips.size()) + " votes are necessary to skip!").queue();
+                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Well, you already voted to skip this song so I removed your vote. " + (requiredVotes - voteSkips.size()) + " more votes are necessary to skip!").queue();
                     } else {
                         voteSkips.add(event.getAuthor().getIdLong());
-                        if (voteSkips.size() >= requiredVotes) {
+                        if (voteSkips.size() >= requiredVotes || isDJ(event.getMember()) || scheduler.getCurrentTrack() != null && scheduler.getCurrentTrack().getDJ() != null && scheduler.getCurrentTrack().getDJ().equals(event.getAuthor())) {
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reached required amount of votes, skipping...").queue();
                             scheduler.skip();
                             return;
                         }
-                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Your vote to skip this song has been submitted. More " + (requiredVotes - voteSkips.size()) + " votes are required to skip.").queue();
+                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Your vote to skip this song has been submitted. " + (requiredVotes - voteSkips.size()) + " more votes are required to skip.").queue();
                     }
                 })
                 .build();
@@ -122,9 +138,11 @@ public class MusicCommands {
                     if (feeder.isSubscribed(event.getGuild())) {
                         event.sendMessage(Emojis.NO_GOOD + " You cannot skip songs in the radio mode!").queue();
                         return;
-                    }
-                    if (!isDJ(event.getMember())) {
+                    } else if (!isDJ(event.getMember())) {
                         event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        return;
+                    } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
+                        event.sendMessage("I'm not playing anything!").queue();
                         return;
                     }
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
@@ -137,7 +155,7 @@ public class MusicCommands {
     @RegisterCommand
     public static ICommand queue() {
         return new ICommand.Builder()
-                .setAliases("queue")
+                .setAliases("queue", "q")
                 .setName("Queue Command")
                 .setDescription("Lists all the tracks in the queue.")
                 .setUsageInstruction("queue <page> //lists the queue page\n" +
@@ -199,7 +217,7 @@ public class MusicCommands {
                             eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + tracks.stream().filter(track -> {
                                 int index = tracks.indexOf(track);
                                 return index < max && index >= min;
-                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** " + track.getTrack().getInfo().title + " (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
+                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** " + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + " (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
                             eb.setFooter("Total queue size: " + tracks.size() + " songs (Total estimated time: " + AudioUtils.format(tracks.stream().mapToLong(track -> track.getTrack().getDuration()).sum()) + ")", null);
                             eb.setColor(Color.decode("#388BDF"));
                             event.sendMessage(eb.build()).queue();
@@ -223,6 +241,9 @@ public class MusicCommands {
                         return;
                     } else if (!isDJ(event.getMember())) {
                         event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        return;
+                    } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
+                        event.sendMessage("I'm not playing anything!").queue();
                         return;
                     }
                     int removedSongs = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().stop();
@@ -252,6 +273,48 @@ public class MusicCommands {
                     AudioPlayer player = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer();
                     player.setPaused(!player.isPaused());
                     event.sendMessage(Emojis.BALLOT_CHECK_MARK + (player.isPaused() ? " The player is now paused. Use `konata pause` again to unpause." : "The player is no longer paused.")).queue();
+                })
+                .build();
+    }
+
+    @RegisterCommand
+    public static ICommand nowplaying() {
+        return new ICommand.Builder()
+                .setCategory(Category.MUSIC)
+                .setAliases("nowplaying", "np", "n")
+                .setName("Now playing Command")
+                .setDescription("Gives you information on the current song.")
+                .setAction((event) -> {
+                    RadioFeeder feeder = KonataBot.getInstance().getMusicManager().getRadioFeeder();
+                    if (feeder.isSubscribed(event.getGuild())) {
+                        RadioTrack track = feeder.getCurrentTrack();
+                        EmbedBuilder embedBuilder = new EmbedBuilder();
+                        embedBuilder.setColor(Color.decode("#388BDF"));
+                        embedBuilder.setTitle("Now playing in radio", track.getTrack().getInfo().uri);
+                        embedBuilder.addField("Title", track.getTrack().getInfo().title, true);
+                        embedBuilder.addField("Duration", AudioUtils.format(track.getTrack().getDuration()), true);
+                        embedBuilder.addField("Author", track.getTrack().getInfo().author, true);
+                        embedBuilder.addField("Added by guild", track.getGuild().getName(), true);
+                        event.sendMessage(embedBuilder.build()).queue();
+                        return;
+                    }
+
+                    TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
+                    if (scheduler.getCurrentTrack() == null) {
+                        event.sendMessage("I'm not playing anything!").queue();
+                        return;
+                    }
+                    KonataTrackContext track = scheduler.getCurrentTrack(); EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setColor(Color.decode("#388BDF"));
+                    embedBuilder.setTitle("Now playing in radio", track.getTrack().getInfo().uri);
+                    embedBuilder.addField("Title", track.getTrack().getInfo().title, true);
+                    embedBuilder.addField("Duration", AudioUtils.format(track.getTrack().getDuration()), true);
+                    embedBuilder.addField("Author", track.getTrack().getInfo().author, true);
+                    embedBuilder.addField("DJ", StringUtils.toString(track.getDJ()), true);
+                    if (track.getChannel() != null)
+                        embedBuilder.addField("Requested channel", track.getChannel().getAsMention(), true);
+                    event.sendMessage(embedBuilder.build()).queue();
+
                 })
                 .build();
     }
@@ -290,10 +353,10 @@ public class MusicCommands {
                         default:
                             if (scheduler.getRepeatMode() != null) {
                                 scheduler.setRepeatMode(null);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat mode on!").queue();
+                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat mode off!").queue();
                             } else {
-                                scheduler.setRepeatMode(TrackScheduler.RepeatMode.QUEUE);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat song mode off!").queue();
+                                scheduler.setRepeatMode(TrackScheduler.RepeatMode.SONG);
+                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat song mode on!").queue();
                             }
                             break;
                     }

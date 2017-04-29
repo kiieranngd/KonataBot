@@ -87,7 +87,7 @@ public class CustomCommands {
                                 return;
                             }
                             CustomCommand cmd = data.getCustomCommands().get(args[1]);
-                            if (cmd.getCreator() != event.getAuthor().getIdLong() && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+                            if (!cmd.getCreator().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
                                 event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot delete this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
                                 return;
                             }
@@ -101,7 +101,7 @@ public class CustomCommands {
                                 return;
                             }
                             cmd = data.getCustomCommands().get(args[1]);
-                            if (cmd.getCreator() != event.getAuthor().getIdLong() && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+                            if (!cmd.getCreator().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
                                 event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot add answers to this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
                                 return;
                             } else if (cmd.getAnswers().contains(args[2])) {
@@ -127,7 +127,7 @@ public class CustomCommands {
                                 event.sendMessage("Nope, the last answer index is " + cmd.getAnswers().size() + "! " + Emojis.SWEAT_SMILE).queue();
                                 return;
                             }
-                            if (cmd.getCreator() != event.getAuthor().getIdLong() && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+                            if (!cmd.getCreator().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
                                 event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot remove answers to this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
                                 return;
                             }
@@ -149,7 +149,7 @@ public class CustomCommands {
                                 return;
                             }
                             cmd = data.getCustomCommands().get(args[1]);
-                            if (cmd.getCreator() != event.getAuthor().getIdLong() && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+                            if (!cmd.getCreator().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
                                 event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot rename this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
                                 return;
                             }

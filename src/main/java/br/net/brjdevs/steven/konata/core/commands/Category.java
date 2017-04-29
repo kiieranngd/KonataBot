@@ -5,7 +5,8 @@ public enum Category {
     INFORMATIVE("Informative", "\u2139"),
     BOT_ADMIN("Bot Administrator", "\u2699"),
     MODERATION("Moderation", "\uD83D\uDDA5"),
-    MUSIC("Music", "\uD83C\uDFB5");
+    MUSIC("Music", "\uD83C\uDFB5"),
+    MISCELLANEOUS("Miscellaneous", "\uD83D\uDD2E");
     private String name, emoji;
 
     Category(String name, String emoji) {
