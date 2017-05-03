@@ -22,7 +22,6 @@ public class ProfileData implements DBObject {
 
     private final String id;
     private long experience, level, coins, lastDaily, reputation;
-    private int lootCrateKeys, lootCrates;
     private String rank;
 
     @ConstructorProperties({"id", "experience", "level", "coins", "lastDaily", "reputation", "rank"})

@@ -13,7 +13,6 @@ import java.util.Random;
 
 public class LootCommand {
 
-    private static final Random r = new Random();
     private static RateLimiter RATE_LIMITER = new RateLimiter(1, 30000);
 
     @RegisterCommand
@@ -30,8 +29,11 @@ public class LootCommand {
                     }
                     Looting looting = Looting.of(((TextChannel) event.getChannel()));
                     long gains = looting.collect();
+                    if (gains <= 0) {
+                        event.sendMessage("Nothing to loot here!").queue();
+                        return;
+                    }
                     if (ProfileUtils.addCoins(ProfileData.of(event.getAuthor()), gains)) {
-                        boolean hasFoundCrate = r.nextInt(20) > 13;
                         event.sendMessage("You walk a little and find " + gains + " coins!").queue();
                     } else {
                         looting.drop(gains);
