@@ -1,9 +1,9 @@
 package br.net.brjdevs.steven.konata.cmds.guildAdmin;
 
-import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import net.dv8tion.jda.core.Permission;
@@ -24,7 +24,7 @@ public class AnnouncesCommand {
                 .setPrivateAvailable(false)
                 .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setAction((event) -> {
-                    Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
+                    Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {
                         case "set":
@@ -66,7 +66,7 @@ public class AnnouncesCommand {
                 .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
-                    Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
+                    Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {
                         case "set":
@@ -106,7 +106,7 @@ public class AnnouncesCommand {
                 .setPrivateAvailable(false)
                 .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setAction((event) -> {
-                    Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
+                    Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {
                         case "set":
@@ -128,7 +128,7 @@ public class AnnouncesCommand {
                                 event.sendMessage("Oops, there's not farewell message set! Use `konata farewell set <message>` to set one!").queue();
                             } else {
                                 TextChannel tc = event.getGuild().getTextChannelById(announces.getChannel());
-                                event.sendMessage("The following message will be sent " + (tc != null ? "in " + tc.getAsMention() : "") + "when an user leaves this guild:\n\n" + announces.getGreeting() + "\n\nIf you want to change it you can use `konata greeting set [new_message]` and if you'd like to remove it just use `konata greeting reset`.").queue();
+                                event.sendMessage("The following message will be sent " + (tc != null ? "in " + tc.getAsMention() : "") + " when an user leaves this guild:\n\n" + announces.getFarewell() + "\n\nIf you want to change it you can use `konata farewell set [new_message]` and if you'd like to remove it just use `konata farewell reset`.").queue();
                             }
                             break;
                     }

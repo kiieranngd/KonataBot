@@ -14,6 +14,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -152,7 +153,7 @@ public class TrackScheduler extends AudioEventAdapter {
             if (channel != null && channel.canTalk())
                 channel.deleteMessageById(lastMessageId).queue();
         }
-        if (endReason.mayStartNext) {
+        if (endReason.mayStartNext || endReason == AudioTrackEndReason.STOPPED) {
             startNext(false);
         }
     }

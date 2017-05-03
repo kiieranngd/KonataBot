@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.entities.Guild;
 public class GuildMusicManager {
     private AudioPlayer audioPlayer;
     private TrackScheduler trackScheduler;
-    private long guildId;
+    public final long guildId;
 
     public GuildMusicManager(AudioPlayer audioPlayer, Guild guild) {
         this.audioPlayer = audioPlayer;

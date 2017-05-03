@@ -33,7 +33,7 @@ public class EightBallCommand {
     };
 
     public static String getAnswer(String answer) {
-        return ANSWERS[answer.codePoints().sum() % ANSWERS.length];
+        return ANSWERS[r.nextInt(ANSWERS.length - 1)];
     }
 
     @RegisterCommand

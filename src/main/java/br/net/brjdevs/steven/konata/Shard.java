@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import javax.security.auth.login.LoginException;
 
 public class Shard {
-    private volatile JDA instance;
+    private JDA instance;
     private int id, total;
     private EventManager eventManager;
     private long started;
@@ -30,7 +30,7 @@ public class Shard {
         if (!config.game.isEmpty())
             builder.setGame(Game.of(config.game, config.streamUrl));
         builder.setEventManager(eventManager);
-        if (config.corePoolSize > 1)
+        if (config.corePoolSize > 2)
             builder.setCorePoolSize(config.corePoolSize);
 
         while (true) {

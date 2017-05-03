@@ -41,7 +41,7 @@ public class AudioLoader implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        GuildData data = KonataBot.getInstance().getDataManager().getGuild(channel.getGuild());
+        GuildData data = GuildData.of(channel.getGuild());
         if (track.getDuration() > data.getMaxSongLength()) {
             channel.sendMessage("You can't add songs longer than " + AudioUtils.format(data.getMaxSongLength()) + " " + Emojis.SWEAT_SMILE).queue();
             return;

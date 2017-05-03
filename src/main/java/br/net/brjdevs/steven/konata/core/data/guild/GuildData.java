@@ -1,5 +1,6 @@
 package br.net.brjdevs.steven.konata.core.data.guild;
 
+import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.rethink.DBObject;
 import br.net.brjdevs.steven.konata.core.music.AudioLoader;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,15 +15,18 @@ import static br.net.brjdevs.steven.konata.core.data.DataManager.conn;
 
 public class GuildData implements DBObject {
 
+    public static GuildData of(Guild guild) {
+        return DataManager.db().getGuild(guild);
+    }
+
     public static String DB_TABLE = "guilds";
 
-    private String id;
-    private String customPrefix;
-    private Map<String, CustomCommand> customCommands;
+    private String id, customPrefix;
+    private Map<String, OldCustomCommand> customCommands;
     private long maxSongLength;
 
     @ConstructorProperties({"id", "customPrefix", "customCommands", "maxSongLength"})
-    public GuildData(String id, String customPrefix, Map<String, CustomCommand> customCommands, long maxSongLength) {
+    public GuildData(String id, String customPrefix, Map<String, OldCustomCommand> customCommands, long maxSongLength) {
         this.id = id;
         this.customPrefix = customPrefix;
         this.customCommands = customCommands;
@@ -45,7 +49,7 @@ public class GuildData implements DBObject {
         return maxSongLength;
     }
 
-    public Map<String, CustomCommand> getCustomCommands() {
+    public Map<String, OldCustomCommand> getCustomCommands() {
         if (customCommands == null)
             customCommands = new HashMap<>();
         return customCommands;

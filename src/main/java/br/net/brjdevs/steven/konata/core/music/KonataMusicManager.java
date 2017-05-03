@@ -1,6 +1,5 @@
 package br.net.brjdevs.steven.konata.core.music;
 
-import br.net.brjdevs.steven.konata.core.music.radio.RadioFeeder;
 import br.net.brjdevs.steven.konata.core.utils.TLongMapUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -12,7 +11,6 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public class KonataMusicManager {
 
-    private RadioFeeder radioFeeder;
     private TLongObjectMap<GuildMusicManager> musicManagers;
     private AudioPlayerManager playerManager;
 
@@ -20,7 +18,6 @@ public class KonataMusicManager {
         this.musicManagers = new TLongObjectHashMap<>();
         this.playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
-        this.radioFeeder = new RadioFeeder(playerManager);
     }
 
     public TLongObjectMap<GuildMusicManager> getMusicManagers() {
@@ -35,10 +32,6 @@ public class KonataMusicManager {
         AudioPlayer audioPlayer = playerManager.createPlayer();
         if (guild.getAudioManager().getSendingHandler() == null || !(guild.getAudioManager().getSendingHandler() instanceof PlayerSendHandler))
             guild.getAudioManager().setSendingHandler(new PlayerSendHandler(audioPlayer));
-        return TLongMapUtils.computeIfAbsent(musicManagers, guild.getIdLong(), new GuildMusicManager(audioPlayer, guild));
-    }
-
-    public RadioFeeder getRadioFeeder() {
-        return radioFeeder;
+        return TLongMapUtils.computeIfAbsent(musicManagers, guild.getIdLong(), (id) -> new GuildMusicManager(audioPlayer, guild));
     }
 }

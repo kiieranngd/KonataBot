@@ -23,7 +23,7 @@ public class PrefixCommand {
                 .setRequiredPermission(Permission.MESSAGE_MANAGE)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
-                    GuildData data = KonataBot.getInstance().getDataManager().getGuild(event.getGuild());
+                    GuildData data = GuildData.of(event.getGuild());
                     if (event.getArguments().isEmpty()) {
                         if (data.getCustomPrefix() == null)
                             event.sendMessage("This guild doesn't have a custom prefix, you can set one by using `konata prefix [new prefix]`, just keep in mind that I'll keep responding to both `konata ` and the new prefix " + Emojis.WINK).queue();

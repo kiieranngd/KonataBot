@@ -4,14 +4,18 @@ import br.net.brjdevs.steven.konata.core.TaskManager;
 import br.net.brjdevs.steven.konata.core.commands.CommandManager;
 import br.net.brjdevs.steven.konata.core.data.Config;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
+import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
+import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.events.EventManager;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
+import br.net.brjdevs.steven.konata.core.utils.ProfileUtils;
 import br.net.brjdevs.steven.konata.log.DiscordLogBack;
 import br.net.brjdevs.steven.konata.log.SimpleLogToSLF4JAdapter;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.rethinkdb.net.Cursor;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -26,6 +30,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.rethinkdb.RethinkDB.r;
+import static br.net.brjdevs.steven.konata.core.data.DataManager.conn;
 
 public class KonataBot {
 
@@ -43,7 +50,6 @@ public class KonataBot {
 
     private final Config config;
     private Shard[] shards;
-    private DataManager dataManager;
     private CommandManager commandManager;
     private KonataMusicManager musicManager;
     private AtomicLongArray lastEvents;
@@ -87,8 +93,8 @@ public class KonataBot {
         return Stream.of(shards).filter(shard -> shard.getJDA().getStatus() == JDA.Status.CONNECTED).toArray(Shard[]::new);
     }
 
-    public DataManager getDataManager() {
-        return dataManager;
+    public Guild getGuildById(long id) {
+        return shards[getShardId(id)].getJDA().getGuildById(id);
     }
 
     public boolean isOwner(User user) {
@@ -116,7 +122,7 @@ public class KonataBot {
 
     public static void main(String[] args) {
         try {
-            RestAction.LOG.setLevel(SimpleLog.Level.OFF); // I don't want my log full of useless errors.
+            RestAction.DEFAULT_FAILURE = (throwable) -> {}; // I don't want my log full of useless errors.
             SimpleLogToSLF4JAdapter.install();
 
             long l = System.currentTimeMillis();
@@ -154,8 +160,6 @@ public class KonataBot {
             LOAD_STATE = LoadState.LOADED;
 
             instance.lastEvents = new AtomicLongArray(shardTotal);
-
-            instance.dataManager = new DataManager();
 
             instance.musicManager = new KonataMusicManager();
 

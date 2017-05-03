@@ -3,6 +3,7 @@ package br.net.brjdevs.steven.konata.core.music;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
@@ -46,13 +47,10 @@ public class AudioUtils {
             tc.sendMessage(Emojis.CONFUSED + " I cannot join " + vc.getName() + " because it has reached the user limit!").queue();
             return false;
         }
-        boolean[] connected = new boolean[] {false};
-        tc.sendMessage("Connecting to `" + vc.getName() + "`...").queue(sent -> {
-            tc.getGuild().getAudioManager().openAudioConnection(vc);
-            sent.editMessage(Emojis.BALLOT_CHECK_MARK + " Connected to " + vc.getName() + ".").queue();
-            connected[0] = true;
-        });
-        while (!connected[0]) {
+        Message sent = tc.sendMessage("Connecting to `" + vc.getName() + "`...").complete();
+        tc.getGuild().getAudioManager().openAudioConnection(vc);
+        sent.editMessage(Emojis.BALLOT_CHECK_MARK + " Connected to " + vc.getName() + ".").queue();
+        while (!tc.getGuild().getAudioManager().isConnected()) {
             try {
                 Thread.sleep(150);
             } catch (InterruptedException ignored) {

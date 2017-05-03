@@ -32,7 +32,7 @@ public class HelpCommand {
                         embedBuilder.setDescription(Stream.of(Category.values()).map(category -> {
                             List<ICommand> c = manager.getCommands(category);
                             return c.isEmpty() ? "" : category.getEmoji() + " **| " + category.getName() + "** - " + c.stream().map(command -> "`" + command.getAliases()[0] + "`").collect(Collectors.joining(", "));
-                        }).collect(Collectors.joining("\n")) + "\n\n**To getData help on a command use `konata help [command alias]`**\n*e.g.: konata help pokedex*");
+                        }).collect(Collectors.joining("\n")) + "\n\n**To db help on a command use `konata help [command alias]`**\n*e.g.: konata help pokedex*");
                         embedBuilder.setColor(Color.decode("#388BDF"));
 
                         event.sendMessage(embedBuilder.build()).queue();

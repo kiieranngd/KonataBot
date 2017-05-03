@@ -1,14 +1,27 @@
 package br.net.brjdevs.steven.konata.cmds.botAdmin;
 
 import br.net.brjdevs.steven.konata.KonataBot;
+import br.net.brjdevs.steven.konata.Shard;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.music.GuildMusicManager;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
+import br.net.brjdevs.steven.konata.core.utils.Utils;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.login.LoginException;
 
 public class RebootCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("Shard Reboot");
 
     @RegisterCommand
     public static ICommand reboot() {
@@ -33,13 +46,24 @@ public class RebootCommand {
                             System.exit(shutdown ? 1 : 0);
                             break;
                         case "shard":
-                            event.sendMessage("If you were not so lazy you'd have finished this. But you didn't, you suck. If a shard died you are fucked.").queue();
-                            break;
-                            //if (args.length < 2 || !args[1].matches("[0-9]+")) {
-                                //event.sendMessage(Emojis.SWEAT_SMILE + " You have to give me a shard to reboot!").queue();
-                                //return;
-                            //}
-                            //int shard = Integer.parseInt(args[1]);
+                            if (args.length < 2 || !args[1].matches("[0-9]+")) {
+                                event.sendMessage(Emojis.SWEAT_SMILE + " You have to give me a shard to reboot!").queue();
+                                return;
+                            }
+                            int shard = Integer.parseInt(args[1]);
+                            boolean isCurrentShard = KonataBot.getInstance().getShard(event.getJDA()).getId() == shard;
+                            try {
+                                event.sendMessage("Restarting shard [" + shard + " / " + KonataBot.getInstance().getShards().length + "]").complete();
+                                restart(KonataBot.getInstance().getShards()[shard]);
+                                if (!isCurrentShard) {
+                                    event.sendMessage("Restarted shard " + shard + " successfully.").queue();
+                                }
+                            } catch (Exception e) {
+                                LOGGER.error("Failed to restart shard " + shard + ".", e);
+                                if (!isCurrentShard) {
+                                    event.sendMessage(Emojis.X + " Something failed when restarting the shard! `" + e.getMessage() + "`\n```" + Utils.getStackTrace(e) + "```").queue();
+                                }
+                            }
                     }
                 })
                 .build();
@@ -58,8 +82,45 @@ public class RebootCommand {
             } catch (Exception ignored) {
             }
         }
+    }
 
-        musicManager.getRadioFeeder().getQueue().clear();
-        musicManager.getRadioFeeder().getAudioPlayer().stopTrack();
+    private static void restart(Shard shard) throws LoginException, InterruptedException {
+        TLongObjectMap<Pair<Long, GuildMusicManager>> musicManagers = new TLongObjectHashMap<>();
+        new TLongObjectHashMap<>(KonataBot.getInstance().getMusicManager().getMusicManagers()).valueCollection()
+                .forEach(manager -> {
+                    if (manager.getGuild() != null
+                            && manager.getGuild().getAudioManager().isConnected()
+                            && manager.getTrackScheduler().getCurrentTrack() != null) {
+                        musicManagers.put(manager.getGuild().getIdLong(), Pair.of(manager.getGuild().getAudioManager().getConnectedChannel().getIdLong(), manager));
+                        manager.getAudioPlayer().setPaused(true);
+                    }
+                    if (manager.getGuild() != null)
+                        manager.getGuild().getAudioManager().closeAudioConnection();
+                    KonataBot.getInstance().getMusicManager().getMusicManagers().remove(manager.guildId);
+                });
+        musicManagers.valueCollection().stream().map(Pair::getValue).forEach(manager -> {
+            TextChannel tc = manager.getTrackScheduler().getCurrentTrack().getChannel();
+            if (tc != null && tc.canTalk())
+                tc.sendMessage("I'll restart this shard, just give me a second to boot up and we will ").complete();
+        });
+        shard.getJDA().shutdown(true);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ignored) {
+        }
+        shard.restartJDA();
+
+        for (long l : musicManagers.keys()) {
+            Guild guild = KonataBot.getInstance().getGuildById(l);
+            if (guild == null)
+                continue;
+            VoiceChannel vc = guild.getVoiceChannelById(musicManagers.get(l).getLeft());
+            if (vc == null)
+                continue;
+            guild.getAudioManager().openAudioConnection(vc);
+            GuildMusicManager musicManager = musicManagers.get(l).getRight();
+            KonataBot.getInstance().getMusicManager().getMusicManagers().put(l, musicManager);
+            musicManager.getAudioPlayer().setPaused(false);
+        }
     }
 }

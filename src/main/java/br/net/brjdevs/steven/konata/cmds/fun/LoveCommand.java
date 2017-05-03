@@ -5,7 +5,10 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.User;
+
+import java.awt.*;
 
 public class LoveCommand {
 
@@ -36,9 +39,9 @@ public class LoveCommand {
                         event.sendMessage(Emojis.COLD_SWEAT + " I think that I need 2 names to calculate love percentage.").queue();
                         return;
                     }
-                    int percentage = (firstName.codePoints().sum() + secondName.codePoints().sum()) % 101;
+                    int percentage = (firstName.hashCode() + secondName.hashCode()) % 101;
                     String message = message(percentage);
-                    event.sendMessage("\u2763 **LOVE CALCULATOR** \u2763\n\uD83D\uDC97 *`" + firstName + "`*\n\uD83D\uDC97 *`" + secondName + "`*\n**" + percentage + "%** `" + StringUtils.getProgressBar(percentage) + "` " + message).queue();
+                    event.sendMessage(new EmbedBuilder().setDescription("\u2763 **LOVE CALCULATOR** \u2763\n\uD83D\uDC97 *`" + firstName + "`*\n\uD83D\uDC97 *`" + secondName + "`*\n**" + percentage + "%** `" + StringUtils.getProgressBar(percentage) + "` " + message).setColor(Color.decode("#388BDF")).build()).queue();
                 })
                 .build();
     }
@@ -53,7 +56,7 @@ public class LoveCommand {
         else if (percentage <= 60)
             return "Pretty great!";
         else if (percentage <= 80)
-            return "A lovely ship!";
+            return "A lovely ship! <:blobaww:306819724367495169>";
         else
             return "Perfect! \u2764";
     }

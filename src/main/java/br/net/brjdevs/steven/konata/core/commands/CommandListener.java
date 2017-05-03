@@ -19,7 +19,7 @@ public class CommandListener extends EventListener<MessageReceivedEvent> {
         if (event.getAuthor().isBot() || event.getAuthor().isFake() || event.getGuild() != null && !event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE, Permission.MESSAGE_READ))
             return;
         String prefix, msg = event.getMessage().getRawContent().toLowerCase();
-        GuildData guild = event.getGuild() == null ? null : KonataBot.getInstance().getDataManager().getGuild(event.getGuild());
+        GuildData guild = event.getGuild() == null ? null : GuildData.of(event.getGuild());
         if (msg.startsWith(prefix = KonataBot.getInstance().getConfig().defaultPrefix) || guild != null && guild.getCustomPrefix() != null && msg.startsWith(prefix = guild.getCustomPrefix())) {
             String fprefix = prefix, alias = msg.substring(fprefix.length()).split(" ")[0];
             ICommand cmd = KonataBot.getInstance().getCommandManager().getCommands().stream().filter(c -> Arrays.stream(c.getAliases()).anyMatch(x -> x.equals(alias))).findFirst().orElse(null);

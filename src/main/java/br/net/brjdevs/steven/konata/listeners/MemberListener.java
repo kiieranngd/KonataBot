@@ -1,6 +1,6 @@
 package br.net.brjdevs.steven.konata.listeners;
 
-import br.net.brjdevs.steven.konata.KonataBot;
+import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.events.EventListener;
 import net.dv8tion.jda.core.entities.Guild;
@@ -18,13 +18,13 @@ public class MemberListener extends EventListener<GenericGuildMemberEvent> {
     @Override
     public void onEvent(GenericGuildMemberEvent event) {
         if (event instanceof GuildMemberJoinEvent) {
-            Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
+            Announces announces = DataManager.db().getAnnounces(event.getGuild());
             TextChannel textChannel;
             if (announces.getGreeting() == null || announces.getChannel() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
                 return;
             textChannel.sendMessage(replace(announces.getGreeting(), event.getMember(), event.getGuild())).queue();
         } else if (event instanceof GuildMemberLeaveEvent) {
-            Announces announces = KonataBot.getInstance().getDataManager().getAnnounces(event.getGuild());
+            Announces announces = DataManager.db().getAnnounces(event.getGuild());
             TextChannel textChannel;
             if (announces.getFarewell() == null || announces.getChannel() == null || (textChannel = event.getGuild().getTextChannelById(announces.getChannel())) == null || !textChannel.canTalk())
                 return;

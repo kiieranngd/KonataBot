@@ -1,6 +1,7 @@
 package br.net.brjdevs.steven.konata.listeners;
 
 import br.net.brjdevs.steven.konata.KonataBot;
+import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.events.EventListener;
@@ -25,13 +26,11 @@ public class CustomCommandsListener extends EventListener<GuildMessageReceivedEv
     public void onEvent(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getAuthor().isFake() || !event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_WRITE, Permission.MESSAGE_READ))
             return;
-        GuildData data = KonataBot.getInstance().getDataManager().getGuild(event.getGuild());
-        if (data.getCustomCommands().isEmpty())
-            return;
+        GuildData data = GuildData.of(event.getGuild());
         String prefix, msg = event.getMessage().getRawContent();
         if (msg.startsWith(prefix = KonataBot.getInstance().getConfig().defaultPrefix) || data.getCustomPrefix() != null && msg.startsWith(prefix = data.getCustomPrefix())) {
             String alias = msg.substring(prefix.length()).split(" ")[0];
-            CustomCommand cmd = data.getCustomCommands().get(alias);
+            CustomCommand cmd = DataManager.db().getCustomCommand(event.getGuild(), alias);
             if (cmd != null) {
                 String answer = replace(cmd.getRandomAnswer(), event.getMember(), msg.substring(prefix.length() + alias.length()).trim(), event);
                 if (!answer.isEmpty())

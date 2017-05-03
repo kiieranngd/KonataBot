@@ -8,6 +8,7 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
+import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
@@ -53,10 +54,10 @@ public class StatsCommand {
                             embedBuilder.addField(":pencil: Text channels", String.valueOf(textChannels.size()), true);
                             embedBuilder.addField(":mega: Voice channels", String.valueOf(voiceChannels.size()), true);
                             embedBuilder.addField(":small_blue_diamond: Shards (C/T) ", KonataBot.getInstance().getConnectedShards().length + "/" + KonataBot.getInstance().getShards().length, true);
-                            embedBuilder.addField("<:jda:230988580904763393> JDA version",JDAInfo.VERSION, true);
+                            embedBuilder.addField("<:jda:230988580904763393> JDA version", JDAInfo.VERSION, true);
                             embedBuilder.addField(":globe_with_meridians: Audio connections", String.valueOf(guilds.stream().filter(guild -> guild.getAudioManager().isConnected()).count()), true);
                             embedBuilder.addField(":notes: Total queue size", String.valueOf(KonataBot.getInstance().getMusicManager().getMusicManagers().valueCollection().stream().mapToLong(musicManager -> musicManager.getTrackScheduler().getQueue().size()).sum()), true);
-                            embedBuilder.addField("\uD83D\uDCFB Radio subscribers", String.valueOf(KonataBot.getInstance().getMusicManager().getRadioFeeder().getSubscribers().size()), true);
+                            embedBuilder.addField("\uD83C\uDFB9 Lavaplayer version", PlayerLibrary.VERSION, true);
                             embedBuilder.setColor(Color.decode("#388BDF"));
 
                             event.sendMessage(embedBuilder.build()).queue();

@@ -3,6 +3,7 @@ package br.net.brjdevs.steven.konata.cmds.fun;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.utils.Emojis;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,8 +68,15 @@ public class RegionalCommand {
                 .setDescription("Make a phrase look cool!")
                 .setCategory(Category.FUN)
                 .setAction((event) -> {
-                    String[] characters = event.getArguments().split("");
-                    String formatted = Stream.of(characters).map(str -> (regional.get(str).isEmpty() ? ":regional_indicator_" + str + ":" : regional.getOrDefault(str, str))).collect(Collectors.joining(" ")).trim();
+                    if (event.getArguments().isEmpty()) {
+                        event.sendMessage(Stream.of("make sentences look like this".split("")).map(str -> (regional.getOrDefault(str, "\u00ad").isEmpty() ? ":regional_indicator_" + str + ":" : regional.getOrDefault(str, str))).collect(Collectors.joining(" "))).queue();
+                    }
+                    String[] characters = event.getArguments().toLowerCase().split("");
+                    String formatted = Stream.of(characters).map(str -> (regional.getOrDefault(str, "\u00ad").isEmpty() ? ":regional_indicator_" + str + ":" : regional.getOrDefault(str, str))).collect(Collectors.joining(" ")).trim();
+                    if (formatted.length() > 2000) {
+                        event.sendMessage(Emojis.X + " Output is too long, please reduce your input!").queue();
+                        return;
+                    }
                     event.sendMessage(formatted).queue();
                 })
                 .build();
