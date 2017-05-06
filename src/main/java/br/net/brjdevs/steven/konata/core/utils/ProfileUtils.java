@@ -4,7 +4,7 @@ import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
 
 public class ProfileUtils {
     public static void addExperience(ProfileData data, long experience) {
-        if (data.getExperience() + experience < 0 || data.getLevel() < 1 && experience < 0) {
+        if (data.getExperience() + experience < 0) {
             return;
         }
         data.setExperience(data.getExperience() + experience);
@@ -13,6 +13,15 @@ public class ProfileUtils {
             data.setLevel(data.getLevel() + 1);
             //getRegisteredListeners().forEach(listener -> listener.onLevelUp(this));
         } else if (data.getExperience() <= 0 && data.getLevel() > 1) {
+            data.setExperience(expForNextLevel(data.getLevel() - 1) + data.getExperience());
+            data.setLevel(data.getLevel() - 1);
+            //getRegisteredListeners().forEach(listener -> listener.onLevelDown(this));
+        }
+    }
+
+    public static void takeExperience(ProfileData data, long experience) {
+        data.setExperience(data.getExperience() + experience);
+        if (data.getExperience() <= 0 && data.getLevel() > 1) {
             data.setExperience(expForNextLevel(data.getLevel() - 1) + data.getExperience());
             data.setLevel(data.getLevel() - 1);
             //getRegisteredListeners().forEach(listener -> listener.onLevelDown(this));

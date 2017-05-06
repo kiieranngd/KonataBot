@@ -50,14 +50,14 @@ public class RichestCommand {
     }
 
     private static Stream<Pair<User, String>> getRichestUsers() {
-        Cursor<Map> cursor = r.table("profiles")
+        Cursor<Map> cursor = r.table(ProfileData.DB_TABLE)
                 .orderBy()
                 .optArg("index", r.desc("coins"))
                 .map(profile -> profile.pluck("id", "coins"))
                 .limit(15)
                 .run(conn(), OptArgs.of("read_mode", "outdated"));
         List<Map> list = cursor.toList();
-        return list.stream().map(map -> Pair.of(getUserById(map.get("id").toString().split(":")[0]), map.get("coins").toString()))
+        return list.stream().map(map -> Pair.of(getUserById(map.get("id").toString()), map.get("coins").toString()))
                 .filter(p -> Objects.nonNull(p.getKey()));
     }
 

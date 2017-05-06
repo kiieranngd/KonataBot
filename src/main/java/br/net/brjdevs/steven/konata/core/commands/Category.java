@@ -10,6 +10,7 @@ public enum Category {
     BOT_ADMIN("Bot Administrator", "\u2699");
     private String name, emoji;
 
+
     Category(String name, String emoji) {
         this.name = name;
         this.emoji = emoji;

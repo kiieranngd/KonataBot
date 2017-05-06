@@ -63,13 +63,14 @@ public class RegionalCommand {
     @RegisterCommand
     public static ICommand regional() {
         return new ICommand.Builder()
-                .setAliases("regional")
+                .setAliases("regional", "reg")
                 .setName("Regional Command")
                 .setDescription("Make a phrase look cool!")
                 .setCategory(Category.FUN)
                 .setAction((event) -> {
                     if (event.getArguments().isEmpty()) {
                         event.sendMessage(Stream.of("make sentences look like this".split("")).map(str -> (regional.getOrDefault(str, "\u00ad").isEmpty() ? ":regional_indicator_" + str + ":" : regional.getOrDefault(str, str))).collect(Collectors.joining(" "))).queue();
+                        return;
                     }
                     String[] characters = event.getArguments().toLowerCase().split("");
                     String formatted = Stream.of(characters).map(str -> (regional.getOrDefault(str, "\u00ad").isEmpty() ? ":regional_indicator_" + str + ":" : regional.getOrDefault(str, str))).collect(Collectors.joining(" ")).trim();

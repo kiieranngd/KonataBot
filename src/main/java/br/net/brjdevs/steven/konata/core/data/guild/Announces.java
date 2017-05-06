@@ -2,6 +2,8 @@ package br.net.brjdevs.steven.konata.core.data.guild;
 
 import br.net.brjdevs.steven.konata.core.data.rethink.DBObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.beans.ConstructorProperties;
 

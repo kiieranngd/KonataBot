@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.net.brjdevs.steven.konata.core.utils.DiscordUtils.isDJ;
+
 public class MusicCommands {
     @RegisterCommand
     public static ICommand play() {
@@ -183,10 +185,10 @@ public class MusicCommands {
                             KonataTrackContext currentTrack = scheduler.getCurrentTrack();
                             EmbedBuilder eb = new EmbedBuilder();
                             eb.setAuthor("Queue for guild " + event.getGuild().getName() + " - Page " + page + "/" + maxPages, null, event.getGuild().getIconUrl());
-                            eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + tracks.stream().filter(track -> {
+                            eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration() - currentTrack.getTrack().getPosition()) + "` / `" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(currentTrack.getTrack().getPosition(), currentTrack.getTrack().getDuration()) + tracks.stream().filter(track -> {
                                 int index = tracks.indexOf(track);
                                 return index < max && index >= min;
-                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** " + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + " (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
+                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** (" + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + ")[" + track.getTrack().getInfo().uri + "] (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
                             eb.setFooter("Total queue size: " + tracks.size() + " songs (Total estimated time: " + AudioUtils.format(tracks.stream().mapToLong(track -> track.getTrack().getDuration()).sum()) + ")", null);
                             eb.setColor(Color.decode("#388BDF"));
                             event.sendMessage(eb.build()).queue();
@@ -204,7 +206,7 @@ public class MusicCommands {
                 .setDescription("Stops the current track and clear the queue.")
                 .setCategory(Category.MUSIC)
                 .setAction((event) -> {
-                   if (!isDJ(event.getMember())) {
+                    if (!isDJ(event.getMember())) {
                         event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
                         return;
                     } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
@@ -213,6 +215,27 @@ public class MusicCommands {
                     }
                     int removedSongs = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().stop();
                     event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Stopped the current track and removed " + removedSongs + " songs from queue.").queue();
+
+                })
+                .build();
+    }
+
+    @RegisterCommand
+    public static ICommand restart() {
+        return new ICommand.Builder()
+                .setAliases("restart")
+                .setName("Restart Command")
+                .setDescription("Restarts the current track if playing, otherwise the restarts the previous track.")
+                .setCategory(Category.MUSIC)
+                .setAction((event) -> {
+                    if (!isDJ(event.getMember())) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        return;
+                    } else if (!KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().restart(event.getMember())) {
+                        event.sendMessage("I'm haven't played anything so I can't restart!").queue();
+                        return;
+                    }
+                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Restarting track...").queue();
 
                 })
                 .build();
@@ -255,7 +278,7 @@ public class MusicCommands {
                     KonataTrackContext track = scheduler.getCurrentTrack(); EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setColor(Color.decode("#388BDF"));
                     embedBuilder.setTitle("\uD83C\uDFA7 Now playing in " + event.getGuild().getAudioManager().getConnectedChannel().getName(), track.getTrack().getInfo().uri);
-                    embedBuilder.addField("Title", track.getTrack().getInfo().title + "  (`" + AudioUtils.format(track.getTrack().getDuration() - track.getTrack().getPosition()) + "` / `" + AudioUtils.format(track.getTrack().getDuration()) + "`)", false);
+                    embedBuilder.addField("Title", track.getTrack().getInfo().title + "  (`" + AudioUtils.format(track.getTrack().getDuration() - track.getTrack().getPosition()) + "` / `" + AudioUtils.format(track.getTrack().getDuration()) + "`)\n"+ (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(track.getTrack().getPosition(), track.getTrack().getDuration()), false);
                     embedBuilder.addField("Author", track.getTrack().getInfo().author, true);
                     if (track.getChannel() != null)
                         embedBuilder.addField("Requested channel", track.getChannel().getAsMention(), true);
@@ -328,9 +351,5 @@ public class MusicCommands {
                     event.sendMessage(Emojis.OK_HAND + " Shuffled queue!").queue();
                 })
                 .build();
-    }
-
-    public static boolean isDJ(Member member) {
-        return member.hasPermission(Permission.MANAGE_SERVER) || member.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase("DJ")) || KonataBot.getInstance().isOwner(member.getUser());
     }
 }

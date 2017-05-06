@@ -24,7 +24,7 @@ repositories {
 dependencies {
     compile 'com.google.guava:guava:21.0'
     compile 'com.rethinkdb:rethinkdb-driver:2.3.3'
-    compile 'net.dv8tion:JDA:3.0.0_188'
+    compile 'net.dv8tion:JDA:3.0.0_191'
     compile 'com.sedmelluq:lavaplayer:1.2.36'
     compile 'org.reflections:reflections:0.9.10'
     compile 'ch.qos.logback:logback-classic:0.9.26'

@@ -23,6 +23,7 @@ public class ProfileData implements DBObject {
     private final String id;
     private long experience, level, coins, lastDaily, reputation;
     private String rank;
+    private String currentGameId;
 
     @ConstructorProperties({"id", "experience", "level", "coins", "lastDaily", "reputation", "rank"})
     public ProfileData(String id, long experience, long level, long coins, long lastDaily, long reputation, String rank) {
@@ -88,6 +89,13 @@ public class ProfileData implements DBObject {
     @JsonIgnore
     public void setRank(Rank rank) {
         this.rank = rank.name();
+    }
+    @JsonIgnore
+    public String getCurrentGame() {
+        return currentGameId;
+    }
+    public void setCurrentGame(String currentGameId) {
+        this.currentGameId = currentGameId;
     }
     @JsonIgnore
     public void addReputation() {

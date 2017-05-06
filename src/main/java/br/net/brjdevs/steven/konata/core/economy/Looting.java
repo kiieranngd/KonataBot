@@ -1,6 +1,5 @@
 package br.net.brjdevs.steven.konata.core.economy;
 
-import br.net.brjdevs.steven.konata.core.TaskManager;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -12,18 +11,6 @@ import static br.net.brjdevs.steven.konata.core.utils.TLongMapUtils.computeIfAbs
 
 public class Looting {
     private static final TLongObjectMap<AtomicLong> LOOTING = new TLongObjectHashMap<>();
-
-    static {
-        TaskManager.startAsyncTask("Coin Expirator", (service) -> {
-            for (long l : LOOTING.keys()) {
-                Looting looting = of(l);
-                looting.collect(100);
-                if (looting.coins.longValue() <= 0) {
-                    LOOTING.remove(l);
-                }
-            }
-        }, 300);
-    }
 
     private static Random r = new Random(System.currentTimeMillis());
 

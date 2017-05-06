@@ -59,6 +59,7 @@ public class Shard {
     public long getUptime() {
         return started;
     }
+
     public EventManager getEventManager() {
         return eventManager;
     }

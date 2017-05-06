@@ -9,5 +9,6 @@ public class Emojis {
             BALLOT_CHECK_MARK = "\u2611",
             CONFUSED = "\uD83D\uDE15",
             OK_HAND = "\uD83D\uDC4C",
-            COLD_SWEAT = "\uD83D\uDE30";
+            COLD_SWEAT = "\uD83D\uDE30",
+            PARTY_POPPER = "\uD83C\uDF89";
 }

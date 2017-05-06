@@ -2,7 +2,6 @@ package br.net.brjdevs.steven.konata.core.data;
 
 import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
-import br.net.brjdevs.steven.konata.core.data.guild.OldCustomCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
 import com.rethinkdb.gen.ast.Table;

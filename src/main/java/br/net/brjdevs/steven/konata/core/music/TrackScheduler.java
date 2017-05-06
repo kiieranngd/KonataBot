@@ -8,12 +8,10 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.ArrayList;
@@ -124,6 +122,21 @@ public class TrackScheduler extends AudioEventAdapter {
         return removedSongs;
     }
 
+    public boolean restart(Member member) {
+        if (currentTrack != null && currentTrack.getTrack().getState() == AudioTrackState.PLAYING) {
+            currentTrack.getTrack().setPosition(0);
+            return true;
+        } else if (previousTrack != null && previousTrack.getChannel() != null && AudioUtils.connect(previousTrack.getChannel(), member)) {
+            List<KonataTrackContext> tracks = new ArrayList<>();
+            tracks.add(previousTrack.makeClone());
+            queue.drainTo(tracks);
+            queue.addAll(tracks);
+            startNext(true);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         TextChannel channel = currentTrack.getChannel();
@@ -153,7 +166,7 @@ public class TrackScheduler extends AudioEventAdapter {
             if (channel != null && channel.canTalk())
                 channel.deleteMessageById(lastMessageId).queue();
         }
-        if (endReason.mayStartNext || endReason == AudioTrackEndReason.STOPPED) {
+        if (endReason.mayStartNext) {
             startNext(false);
         }
     }

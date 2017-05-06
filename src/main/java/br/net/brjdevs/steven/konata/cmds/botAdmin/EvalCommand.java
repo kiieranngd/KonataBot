@@ -12,6 +12,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
@@ -45,7 +46,7 @@ public class EvalCommand {
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("br.net.brjdevs.steven.konata"))));
         Set<Class<?>> classes = reflections.getSubTypesOf(Object.class).stream().filter(clazz -> clazz != null && clazz.getCanonicalName() != null).collect(Collectors.toSet());
         classes.addAll(reflections.getSubTypesOf(Enum.class));
-        imports = classes.stream().map(clazz -> "import " + clazz.getCanonicalName() + ";").collect(Collectors.joining("\n")).replace("import br.net.brjdevs.steven.konata.core.commands.ICommand.Builder;", "");
+        imports = classes.stream().filter(clazz -> !Modifier.isPrivate(clazz.getModifiers()) && !clazz.getCanonicalName().endsWith(".Builder")).map(clazz -> "import " + clazz.getCanonicalName() + ";").collect(Collectors.joining("\n"));
     }
 
     private static String compile() throws Exception {

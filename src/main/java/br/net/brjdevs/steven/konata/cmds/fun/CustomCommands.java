@@ -73,6 +73,10 @@ public class CustomCommands {
                                 event.sendMessage("Oh well, this guild already has a command with this name. If you want, you can add more answers to it using `konata cmds addanswer " + args[1] + " " + args[2] + "` " + Emojis.WINK).queue();
                                 return;
                             }
+                            if (args[1].isEmpty() || args[2].isEmpty()) {
+                                event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getJDA())).queue();
+                                return;
+                            }
                             new CustomCommand(event.getGuild(), event.getMember(), args[1], args[2]).saveAsync();
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Created custom command " + args[1] + ", you can add more answers to it if you'd like using `konata cmds addanswer " + args[1] + " [answer]` " + Emojis.WINK).queue();
                             break;

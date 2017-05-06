@@ -25,6 +25,10 @@ public class ProfileCommand {
                 .setCategory(Category.ECONOMY)
                 .setAction((event) -> {
                     User user = event.getMessage().getMentionedUsers().isEmpty() ? event.getAuthor() : event.getMessage().getMentionedUsers().get(0);
+                    if (user.isBot()) {
+                        event.sendMessage("Bots can't have profiles!").queue();
+                        return;
+                    }
                     ProfileData data = ProfileData.of(user);
                     EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setAuthor(user.getName() + "'s profile", null, user.getEffectiveAvatarUrl());

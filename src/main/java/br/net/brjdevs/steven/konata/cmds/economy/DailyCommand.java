@@ -27,7 +27,7 @@ public class DailyCommand {
                         event.sendMessage(Emojis.SWEAT_SMILE + " You have to wait more " + time(data.getLastDaily() - System.currentTimeMillis()) + " to claim another daily reward!").queue();
                         return;
                     }
-                    data.setLastDaily(System.currentTimeMillis());
+                    data.setLastDaily(System.currentTimeMillis() + 86400000);
                     int coins = r.nextInt(300) + 100;
                     ProfileUtils.addCoins(data, coins);
                     event.sendMessage("\uD83D\uDCB0 Here you go: " + coins + " coins! You can claim another reward in 24 hours!").queue();

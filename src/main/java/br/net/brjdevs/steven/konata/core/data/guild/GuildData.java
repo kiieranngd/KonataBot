@@ -10,11 +10,10 @@ import java.beans.ConstructorProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.rethinkdb.RethinkDB.r;
 import static br.net.brjdevs.steven.konata.core.data.DataManager.conn;
+import static com.rethinkdb.RethinkDB.r;
 
 public class GuildData implements DBObject {
-
     public static GuildData of(Guild guild) {
         return DataManager.db().getGuild(guild);
     }
@@ -22,19 +21,17 @@ public class GuildData implements DBObject {
     public static String DB_TABLE = "guilds";
 
     private String id, customPrefix;
-    private Map<String, OldCustomCommand> customCommands;
     private long maxSongLength;
 
-    @ConstructorProperties({"id", "customPrefix", "customCommands", "maxSongLength"})
-    public GuildData(String id, String customPrefix, Map<String, OldCustomCommand> customCommands, long maxSongLength) {
+    @ConstructorProperties({"id", "customPrefix", "maxSongLength"})
+    public GuildData(String id, String customPrefix, long maxSongLength) {
         this.id = id;
         this.customPrefix = customPrefix;
-        this.customCommands = customCommands;
         this.maxSongLength = maxSongLength;
     }
 
     public GuildData(Guild guild) {
-        this(guild.getId(), null, new HashMap<>(), AudioLoader.MAX_SONG_LENGTH);
+        this(guild.getId(), null, AudioLoader.MAX_SONG_LENGTH);
     }
 
     public String getId() {
@@ -47,12 +44,6 @@ public class GuildData implements DBObject {
 
     public long getMaxSongLength() {
         return maxSongLength;
-    }
-
-    public Map<String, OldCustomCommand> getCustomCommands() {
-        if (customCommands == null)
-            customCommands = new HashMap<>();
-        return customCommands;
     }
 
     public void setCustomPrefix(String customPrefix) {

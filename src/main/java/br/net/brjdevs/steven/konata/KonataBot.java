@@ -4,35 +4,29 @@ import br.net.brjdevs.steven.konata.core.TaskManager;
 import br.net.brjdevs.steven.konata.core.commands.CommandManager;
 import br.net.brjdevs.steven.konata.core.data.Config;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
-import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
-import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.events.EventManager;
+import br.net.brjdevs.steven.konata.core.snow64.Snow64Generator;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
-import br.net.brjdevs.steven.konata.core.utils.ProfileUtils;
 import br.net.brjdevs.steven.konata.log.DiscordLogBack;
 import br.net.brjdevs.steven.konata.log.SimpleLogToSLF4JAdapter;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.rethinkdb.net.Cursor;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.rethinkdb.RethinkDB.r;
-import static br.net.brjdevs.steven.konata.core.data.DataManager.conn;
 
 public class KonataBot {
 
@@ -82,9 +76,22 @@ public class KonataBot {
         return Stream.of(shards).map(g -> g.getJDA().getTextChannelById(id)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
+    public TextChannel getTextChannelById(long id) {
+        return Stream.of(shards).map(g -> g.getJDA().getTextChannelById(id)).filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
+    public PrivateChannel getPrivateChannelById(String id) {
+        return Stream.of(shards).map(g -> g.getJDA().getPrivateChannelById(id)).filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
+    public PrivateChannel getPrivateChannelById(long id) {
+        return Stream.of(shards).map(g -> g.getJDA().getPrivateChannelById(id)).filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
     public AtomicLongArray getLastEvents() {
         return lastEvents;
     }
+
     public List<VoiceChannel> getVoiceChannels() {
         return Stream.of(shards).map(g -> g.getJDA().getVoiceChannels()).flatMap(List::stream).collect(Collectors.toList());
     }
@@ -122,6 +129,7 @@ public class KonataBot {
 
     public static void main(String[] args) {
         try {
+
             RestAction.DEFAULT_FAILURE = (throwable) -> {}; // I don't want my log full of useless errors.
             SimpleLogToSLF4JAdapter.install();
 
