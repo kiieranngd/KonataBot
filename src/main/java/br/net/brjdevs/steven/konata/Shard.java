@@ -26,6 +26,8 @@ public class Shard {
     public void restartJDA() throws LoginException, InterruptedException {
         Config config = KonataBot.getInstance().getConfig();
         JDABuilder builder = new JDABuilder(AccountType.BOT);
+        if (total > 1)
+        builder.useSharding(id, total);
         builder.setToken(config.token);
         if (!config.game.isEmpty())
             builder.setGame(Game.of(config.game, config.streamUrl));
