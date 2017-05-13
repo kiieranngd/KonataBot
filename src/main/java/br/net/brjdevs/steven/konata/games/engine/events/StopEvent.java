@@ -2,9 +2,8 @@ package br.net.brjdevs.steven.konata.games.engine.events;
 
 import br.net.brjdevs.steven.konata.games.engine.AbstractGame;
 
-public class StopEvent extends GameEvent {
+public class StopEvent extends GameEndEvent {
     public StopEvent(AbstractGame game) {
-        super(game);
-        game.end(AbstractGame.GameEndReason.STOP);
+        super(game, AbstractGame.GameEndReason.STOP);
     }
 }

@@ -10,5 +10,6 @@ public class Emojis {
             CONFUSED = "\uD83D\uDE15",
             OK_HAND = "\uD83D\uDC4C",
             COLD_SWEAT = "\uD83D\uDE30",
-            PARTY_POPPER = "\uD83C\uDF89";
+            PARTY_POPPER = "\uD83C\uDF89",
+            SMILE = "\uD83D\uDE04";
 }

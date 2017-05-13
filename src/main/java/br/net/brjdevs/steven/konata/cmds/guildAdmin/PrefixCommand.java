@@ -5,8 +5,8 @@ import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
+import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
-import net.dv8tion.jda.core.Permission;
 
 public class PrefixCommand {
 
@@ -19,11 +19,14 @@ public class PrefixCommand {
                 .setDescription("Changes the prefix if you need!")
                 .setUsageInstruction("prefix <prefix> //changes the custom prefix\n" +
                         "prefix //returns the custom prefix\n" +
-                        "prefix reset //resets the custom prefix\n\n*Requires MESSAGE_MANAGE permission.*")
-                .setRequiredPermission(Permission.MESSAGE_MANAGE)
+                        "prefix reset //resets the custom prefix\n\n*Requires GREETINGS_FAREWELLS permission*")
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     GuildData data = GuildData.of(event.getGuild());
+                    if (!data.hasPermission(event.getMember(), Permissions.PREFIX_SET)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `PREFIX_SET` permission!").queue();
+                        return;
+                    }
                     if (event.getArguments().isEmpty()) {
                         if (data.getCustomPrefix() == null)
                             event.sendMessage("This guild doesn't have a custom prefix, you can set one by using `konata prefix [new prefix]`, just keep in mind that I'll keep responding to both `konata ` and the new prefix " + Emojis.WINK).queue();

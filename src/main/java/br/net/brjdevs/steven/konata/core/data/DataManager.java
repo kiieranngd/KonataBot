@@ -4,13 +4,16 @@ import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
+import br.net.brjdevs.steven.konata.core.poll.Poll;
 import com.rethinkdb.gen.ast.Table;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.rethinkdb.RethinkDB.r;
 
@@ -47,6 +50,19 @@ public class DataManager {
 
     public List<CustomCommand> getCustomCommands(Guild guild) {
         return getCustomCommands(guild.getId());
+    }
+
+    public Poll getPoll(String textChannelId) {
+        return r.table(Poll.DB_TABLE).get(textChannelId).run(conn(), Poll.class);
+    }
+
+    public Poll getPoll(TextChannel textChannel) {
+        return getPoll(textChannel.getId());
+    }
+
+    public List<Poll> getPolls() {
+        Cursor<Poll> polls = r.table(Poll.DB_TABLE).run(conn(), Poll.class);
+        return polls.toList();
     }
 
     public ProfileData getProfile(String userId) {

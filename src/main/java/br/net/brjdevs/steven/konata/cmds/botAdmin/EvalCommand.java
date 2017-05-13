@@ -164,10 +164,10 @@ public class EvalCommand {
                         event.sendMessage("Something went wrong trying to eval your query.\n" + x).queue();
                     }
                     if (f.exists() && !f.delete()) {
-                        event.sendMessage("Could not delete DontUse.java").queue();
+                        event.sendMessage("Could not destroy DontUse.java").queue();
                     }
                     if (out.exists() && !out.delete()) {
-                        event.sendMessage("Could not delete DontUse.class").queue();
+                        event.sendMessage("Could not destroy DontUse.class").queue();
                     }
                 })
                 .build();

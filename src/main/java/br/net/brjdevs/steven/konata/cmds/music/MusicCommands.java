@@ -4,7 +4,9 @@ import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.music.*;
+import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -18,8 +20,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static br.net.brjdevs.steven.konata.core.utils.DiscordUtils.isDJ;
 
 public class MusicCommands {
     @RegisterCommand
@@ -119,7 +119,7 @@ public class MusicCommands {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
                         event.sendMessage("I'm not playing anything!").queue();
@@ -185,7 +185,7 @@ public class MusicCommands {
                             KonataTrackContext currentTrack = scheduler.getCurrentTrack();
                             EmbedBuilder eb = new EmbedBuilder();
                             eb.setAuthor("Queue for guild " + event.getGuild().getName() + " - Page " + page + "/" + maxPages, null, event.getGuild().getIconUrl());
-                            eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration() - currentTrack.getTrack().getPosition()) + "` / `" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(currentTrack.getTrack().getPosition(), currentTrack.getTrack().getDuration()) + tracks.stream().filter(track -> {
+                            eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "` / `" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(currentTrack.getTrack().getPosition(), currentTrack.getTrack().getDuration()) + tracks.stream().filter(track -> {
                                 int index = tracks.indexOf(track);
                                 return index < max && index >= min;
                             }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** (" + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + ")[" + track.getTrack().getInfo().uri + "] (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
@@ -207,7 +207,7 @@ public class MusicCommands {
                 .setCategory(Category.MUSIC)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
                         event.sendMessage("I'm not playing anything!").queue();
@@ -229,7 +229,7 @@ public class MusicCommands {
                 .setCategory(Category.MUSIC)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     } else if (!KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().restart(event.getMember())) {
                         event.sendMessage("I'm haven't played anything so I can't restart!").queue();
@@ -251,7 +251,7 @@ public class MusicCommands {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     }
                     AudioPlayer player = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer();
@@ -278,7 +278,7 @@ public class MusicCommands {
                     KonataTrackContext track = scheduler.getCurrentTrack(); EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setColor(Color.decode("#388BDF"));
                     embedBuilder.setTitle("\uD83C\uDFA7 Now playing in " + event.getGuild().getAudioManager().getConnectedChannel().getName(), track.getTrack().getInfo().uri);
-                    embedBuilder.addField("Title", track.getTrack().getInfo().title + "  (`" + AudioUtils.format(track.getTrack().getDuration() - track.getTrack().getPosition()) + "` / `" + AudioUtils.format(track.getTrack().getDuration()) + "`)\n"+ (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(track.getTrack().getPosition(), track.getTrack().getDuration()), false);
+                    embedBuilder.addField("Title", track.getTrack().getInfo().title + "  (`" + AudioUtils.format(track.getTrack().getPosition()) + "` / `" + AudioUtils.format(track.getTrack().getDuration()) + "`)\n"+ (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(track.getTrack().getPosition(), track.getTrack().getDuration()), false);
                     embedBuilder.addField("Author", track.getTrack().getInfo().author, true);
                     if (track.getChannel() != null)
                         embedBuilder.addField("Requested channel", track.getChannel().getAsMention(), true);
@@ -306,7 +306,7 @@ public class MusicCommands {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                    if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     }
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
@@ -344,12 +344,16 @@ public class MusicCommands {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the DJ role!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();
                         return;
                     }
                     KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().shuffle();
                     event.sendMessage(Emojis.OK_HAND + " Shuffled queue!").queue();
                 })
                 .build();
+    }
+
+    public static boolean isDJ(Member member) {
+        return GuildData.of(member.getGuild()).hasPermission(member, Permissions.DJ_OVERRIDE);
     }
 }

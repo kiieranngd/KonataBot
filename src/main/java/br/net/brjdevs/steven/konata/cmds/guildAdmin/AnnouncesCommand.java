@@ -5,6 +5,8 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.guild.Announces;
+import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
+import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -22,8 +24,11 @@ public class AnnouncesCommand {
                         "greeting set <greeting message>\n" +
                         "greeting reset //resets the greeting message")
                 .setPrivateAvailable(false)
-                .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setAction((event) -> {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        return;
+                    }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {
@@ -63,9 +68,12 @@ public class AnnouncesCommand {
                 .setUsageInstruction("announceschannel //returns the channel\n" +
                         "announceschannel set <channel_mention>\n" +
                         "announceschannel reset //resets the announce channel")
-                .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        return;
+                    }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {
@@ -104,8 +112,11 @@ public class AnnouncesCommand {
                         "farewell set <farewell message>\n" +
                         "farewell reset //resets the farewell message")
                 .setPrivateAvailable(false)
-                .setRequiredPermission(Permission.MANAGE_SERVER)
                 .setAction((event) -> {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        return;
+                    }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());
                     String[] s = event.getArguments().split(" ", 2);
                     switch (s[0]) {

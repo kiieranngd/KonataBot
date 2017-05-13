@@ -5,7 +5,6 @@ import br.net.brjdevs.steven.konata.core.commands.CommandManager;
 import br.net.brjdevs.steven.konata.core.data.Config;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.events.EventManager;
-import br.net.brjdevs.steven.konata.core.snow64.Snow64Generator;
 import br.net.brjdevs.steven.konata.core.music.KonataMusicManager;
 import br.net.brjdevs.steven.konata.log.DiscordLogBack;
 import br.net.brjdevs.steven.konata.log.SimpleLogToSLF4JAdapter;
@@ -21,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLongArray;
@@ -61,15 +60,24 @@ public class KonataBot {
     }
 
     public List<Guild> getGuilds() {
-        return Stream.of(shards).map(g -> g.getJDA().getGuilds()).flatMap(List::stream).collect(Collectors.toList());
+        return Stream.of(shards).flatMap(g -> g.getJDA().getGuilds().stream()).collect(Collectors.toList());
     }
 
     public List<User> getUsers() {
-        return Stream.of(shards).map(g -> g.getJDA().getUsers()).flatMap(List::stream).collect(Collectors.toList());
+        return Stream.of(shards).flatMap(g -> g.getJDA().getUsers().stream()).collect(Collectors.toList());
     }
 
+    public User getUserById(String id) {
+        return Stream.of(shards).map(g -> g.getJDA().getUserById(id)).filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
+    public User getUserById(long id) {
+        return Stream.of(shards).map(g -> g.getJDA().getUserById(id)).filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
+
     public List<TextChannel> getTextChannels() {
-        return Stream.of(shards).map(g -> g.getJDA().getTextChannels()).flatMap(List::stream).collect(Collectors.toList());
+        return Stream.of(shards).flatMap(g -> g.getJDA().getTextChannels().stream()).collect(Collectors.toList());
     }
 
     public TextChannel getTextChannelById(String id) {

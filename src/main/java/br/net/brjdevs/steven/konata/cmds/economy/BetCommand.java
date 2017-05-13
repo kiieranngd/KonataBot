@@ -4,26 +4,20 @@ import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
-import br.net.brjdevs.steven.konata.core.utils.DiscordUtils;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.ProfileUtils;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
-import gnu.trove.impl.sync.TSynchronizedLongLongMap;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
-import gnu.trove.list.linked.TLongLinkedList;
 import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.awt.Color;
-import java.security.Permissions;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -59,7 +53,13 @@ public class BetCommand {
                                 event.sendMessage(Emojis.X + " You have to provide a valid amount of coins! e.g.: konata bet start 100").queue();
                                 return;
                             }
+                            ProfileData data = ProfileData.of(event.getAuthor());
                             int i = Integer.parseInt(args[1]);
+                            if (!ProfileUtils.takeCoins(data, i)) {
+                                event.sendMessage(Emojis.X + " You don't have enough coins to start a bet with " + i + " coins!").queue();
+                                return;
+                            }
+                            data.saveAsync();
                             new Bet(((TextChannel) event.getChannel()), event.getAuthor(), i);
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Started a bet in " + ((TextChannel) event.getChannel()).getAsMention() + " with " + i + " coins!").queue();
                             break;
@@ -75,14 +75,14 @@ public class BetCommand {
                                 event.sendMessage(Emojis.X + " You have to provide a valid amount of coins or use `all` to bet all your coins!! e.g.: konata bet join " + bet.getMinimumAmount()).queue();
                                 return;
                             } else if (bet.map.containsKey(event.getAuthor().getIdLong())) {
-                                ProfileData data = ProfileData.of(event.getAuthor());
+                                data = ProfileData.of(event.getAuthor());
                                 ProfileUtils.addCoins(data, bet.map.get(event.getAuthor().getIdLong()));
                                 data.saveAsync();
                                 bet.modifyUser(event.getAuthor(), 0);
                                 event.sendMessage("You quit the bet! (total coins: " + bet.getTotalAmount() + ")").queue();
                                 return;
                             }
-                            ProfileData data = ProfileData.of(event.getAuthor());
+                            data = ProfileData.of(event.getAuthor());
                             long amount = args[1].equals("all") ? data.getCoins() : Long.parseLong(args[1]);
                             long min = bet.getMinimumAmount();
                             if (min > amount) {
@@ -118,8 +118,8 @@ public class BetCommand {
                             if (bet == null) {
                                 event.sendMessage("There are no bets running in this channel! " + Emojis.SWEAT_SMILE).queue();
                                 return;
-                            } else if (!bet.getCreator().equals(event.getAuthor()) && !DiscordUtils.isBotCommander(event.getMember())) {
-                                event.sendMessage(Emojis.X + " You don't have the `Bot Commander` role.").queue();
+                            } else if (!bet.getCreator().equals(event.getAuthor()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), br.net.brjdevs.steven.konata.core.permissions.Permissions.BET_MANAGE)) {
+                                event.sendMessage(Emojis.X + " You don't have the `BET_MANAGE` permission!").queue();
                                 return;
                             }
                             Bet.bets.remove(event.getChannel().getIdLong());

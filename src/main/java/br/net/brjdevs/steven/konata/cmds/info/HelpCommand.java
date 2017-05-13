@@ -42,7 +42,7 @@ public class HelpCommand {
                             event.sendMessage(Emojis.SWEAT_SMILE + " I didn't find any commands matching that criteria! Make sure you didn't include prefixes!").queue();
                             return;
                         }
-                        event.sendMessage(CommandManager.getHelp(command, event.getJDA())).queue();
+                        event.sendMessage(CommandManager.getHelp(command, event.getMember())).queue();
                     }
                 })
                 .build();

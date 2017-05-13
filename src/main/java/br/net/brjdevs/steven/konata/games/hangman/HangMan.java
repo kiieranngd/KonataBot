@@ -2,8 +2,6 @@ package br.net.brjdevs.steven.konata.games.hangman;
 
 import br.net.brjdevs.steven.konata.core.data.FileDataManager;
 import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
-import br.net.brjdevs.steven.konata.core.utils.Emojis;
-import br.net.brjdevs.steven.konata.core.utils.ProfileUtils;
 import br.net.brjdevs.steven.konata.games.engine.AbstractGame;
 import br.net.brjdevs.steven.konata.games.engine.GamePlayer;
 import br.net.brjdevs.steven.konata.games.engine.events.LooseEvent;
@@ -14,10 +12,12 @@ import br.net.brjdevs.steven.konata.games.hangman.events.InvalidGuessEvent;
 import gnu.trove.list.TCharList;
 import gnu.trove.list.array.TCharArrayList;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HangMan extends AbstractGame {
@@ -28,28 +28,28 @@ public class HangMan extends AbstractGame {
     private String word, guesses;
     private TCharList mistakes;
 
-    public HangMan(MessageChannel channel, ProfileData data) {
-        super(5, channel, data);
+    public HangMan(MessageChannel channel, User user) {
+        super(5, channel, user);
     }
 
     public int getMaxMistakes() {
         return getPlayers().length * 5;
     }
     public void guess(GamePlayer player, String guess) {
-        if (!word.contains(guess)) {
+        if (!word.toLowerCase().contains(guess.toLowerCase())) {
             mistakes.add(guess.charAt(0));
             if (isGameOver()) {
                 fireEvent(new LooseEvent(this));
                 return;
             }
             fireEvent(new InvalidGuessEvent(this, guess, player));
-        } else if (guess.contains(guess)) {
+        } else if (guesses.toLowerCase().contains(guess.toLowerCase()) || mistakes.contains(guess.toLowerCase().charAt(0)) || mistakes.contains(guess.toUpperCase().charAt(0))) {
             fireEvent(new AlreadyGuessedEvent(this, guess, player));
         } else {
             final char c = guess.charAt(0);
             final char[] chars = guesses.toCharArray();
             int index = -1;
-            while((index = index > -1 ? word.indexOf(guess, index + 1) : word.indexOf(guess)) > -1) {
+            while((index = index > -1 ? word.indexOf(guess, index + 1) : word.toLowerCase().indexOf(guess.toLowerCase())) > -1) {
                 chars[index] = c;
             }
             this.guesses = String.valueOf(chars);
@@ -94,35 +94,11 @@ public class HangMan extends AbstractGame {
     }
     @Override
     public void end(GameEndReason endReason) {
-        String message = "";
-        ProfileData[] data = Stream.of(getPlayers()).map(GamePlayer::getProfile).toArray(ProfileData[]::new);
-        switch (endReason) {
-            case DEFEAT:
-                message = Emojis.CONFUSED + " You lost but you did your best! The word was `" + word + "`. *-5 experience*";
-                Stream.of(data).forEach(profile -> ProfileUtils.takeExperience(profile, 5));
-                break;
-            case VICTORY:
-                message = Emojis.PARTY_POPPER + " Yay, you won! Congratulations! *+15 experience +10 coins*";
-                Stream.of(data).forEach(profile -> {
-                    ProfileUtils.addExperience(profile, 15);
-                    ProfileUtils.addCoins(profile, 10);
-                });
-                break;
-            case STOP:
-                message = "Aww, why did you give up? You were doing so well! *-5 experience*";
-                Stream.of(data).forEach(profile -> ProfileUtils.takeExperience(profile, 5));
-                break;
-            case TIE:
-                message = "How the fuck did you manage to tie in a HangMan game?";
-                break;
-        }
-        Stream.of(data).forEach(ProfileData::saveAsync);
-        getChannel().sendMessage(message).queue();
+
     }
     @Override
     public void call(MessageReceivedEvent event) {
-        GamePlayer player = Arrays.stream(getPlayers()).filter(p -> p.getId().equals(event.getAuthor().getId())).findFirst().orElse(null);
-        System.out.println("Got call, player is" + (player != null ? " not " : " ") + "null");
+        GamePlayer player = Arrays.stream(getPlayers()).filter(p -> p.getId() == event.getAuthor().getIdLong()).findFirst().orElse(null);
         if (player == null)
             return;
         String msg = event.getMessage().getRawContent();

@@ -43,7 +43,7 @@ public class CommandListener extends EventListener<MessageReceivedEvent> {
                 try {
                     KonataBot.getInstance().getCommandManager().invoke(e);
                     if (event.isFromType(ChannelType.TEXT))
-                        Looting.of(event.getTextChannel()).drop(r.nextInt(15), 6);
+                        Looting.of(event.getTextChannel()).drop(r.nextInt(20), 5);
                 } catch (Exception ex) {
                     LOGGER.error("An unexpected error has occurred while executing command `" + cmd.getName() + "`", ex);
                     e.sendMessage(Emojis.COLD_SWEAT + " An unexpected `" + ex.getClass().getSimpleName() + "` has occurred while executing this command.\n" + (ex.getMessage() != null ? "`" + ex.getMessage() + "`\n\n" : "") + "You don't need to report this, my owner has been notified about it.").queue();

@@ -6,10 +6,11 @@ import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.DataManager;
 import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
+import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
+import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -29,7 +30,7 @@ public class CustomCommands {
                 .setUsageInstruction(
                         "cmds list <page>\n" +
                                 "cmds create [command_name] [command answer]\n" +
-                                "\\*cmds delete [command_name]\n" +
+                                "\\*cmds destroy [command_name]\n" +
                                 "\\*cmds addanswer [command_name] [answer]\n" +
                                 "\\*cmds rmanswer [command_name] [answer_index]\n" +
                                 "\n" +
@@ -74,13 +75,13 @@ public class CustomCommands {
                                 return;
                             }
                             if (args[1].isEmpty() || args[2].isEmpty()) {
-                                event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getJDA())).queue();
+                                event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getMember())).queue();
                                 return;
                             }
                             new CustomCommand(event.getGuild(), event.getMember(), args[1], args[2]).saveAsync();
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Created custom command " + args[1] + ", you can add more answers to it if you'd like using `konata cmds addanswer " + args[1] + " [answer]` " + Emojis.WINK).queue();
                             break;
-                        case "delete":
+                        case "destroy":
                         case "del":
                         case "remove":
                             CustomCommand cmd = DataManager.db().getCustomCommand(event.getGuild(), args[1]);
@@ -88,8 +89,8 @@ public class CustomCommands {
                                 event.sendMessage("Oops, this guild doesn't have a custom command with that name! " + Emojis.SWEAT_SMILE).queue();
                                 return;
                             }
-                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot delete this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
+                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             }
                             cmd.deleteAsync();
@@ -101,8 +102,8 @@ public class CustomCommands {
                                 event.sendMessage("Oops, this guild doesn't have a custom command with that name! " + Emojis.SWEAT_SMILE).queue();
                                 return;
                             }
-                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot add answers to this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
+                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             } else if (cmd.getAnswers().contains(args[2])) {
                                 event.sendMessage("Oh well, this command already has this answer! " + Emojis.SWEAT_SMILE).queue();
@@ -127,8 +128,8 @@ public class CustomCommands {
                                 event.sendMessage("Nope, the last answer index is " + cmd.getAnswers().size() + "! " + Emojis.SWEAT_SMILE).queue();
                                 return;
                             }
-                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot remove answers to this command because you are not its owner and you don't have MANAGE_SERVER permission.").queue();
+                            if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             }
                             cmd.getAnswers().remove(i - 1);
@@ -139,7 +140,7 @@ public class CustomCommands {
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed answer from custom command `" + args[1] + "`.").queue();
                             break;
                         default:
-                            event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getJDA())).queue();
+                            event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getMember())).queue();
                             break;
                     }
                 })

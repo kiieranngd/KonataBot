@@ -2,6 +2,7 @@ package br.net.brjdevs.steven.konata.cmds.botAdmin;
 
 import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.Shard;
+import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.music.GuildMusicManager;
@@ -32,6 +33,7 @@ public class RebootCommand {
                 .setOwnerOnly(true)
                 .setUsageInstruction("reboot all //restarts the bot\n" +
                         "reboot shard <shard_id> // reboots the shard")
+                .setCategory(Category.BOT_ADMIN)
                 .setAction((event) -> {
                     String[] args = event.getArguments().split(" ", 2);
                     switch (args[0]) {

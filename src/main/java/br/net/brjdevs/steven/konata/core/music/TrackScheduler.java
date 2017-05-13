@@ -8,12 +8,15 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.xml.ws.Holder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,7 +150,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 stop();
                 return;
             }
-            channel.sendMessage("\uD83D\uDD0A Now playing in **" + vc.getName() + "** `" + track.getInfo().title + "` (`" + AudioUtils.format(track.getDuration()) + "`) added by " + StringUtils.toString(currentTrack.getDJ())).queue(this::setLastMessage);
+            AudioTrackInfo info = track.getInfo();
+            channel.sendMessage("\uD83D\uDD0A Now playing in **" + vc.getName() + "** `" + info.title + "` (`" + AudioUtils.format(info.length) + "`) added by " + StringUtils.toString(currentTrack.getDJ())).queue(this::setLastMessage);
         }
     }
 
@@ -163,8 +167,9 @@ public class TrackScheduler extends AudioEventAdapter {
         voteSkips.clear();
         if (currentTrack != null) {
             TextChannel channel = currentTrack.getChannel();
-            if (channel != null && channel.canTalk())
+            if (channel != null && channel.canTalk()) {
                 channel.deleteMessageById(lastMessageId).queue();
+            }
         }
         if (endReason.mayStartNext) {
             startNext(false);
@@ -173,22 +178,32 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        TextChannel channel = currentTrack.getChannel();
-        if (channel != null && channel.canTalk()) {
-            String msg = ":fearful: Failed to play " + track.getInfo().title + ": `" + exception.getMessage() + "`";
-            channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
-        }
-        track.stop();
+        try {
+            TextChannel channel = currentTrack.getChannel();
+            if (channel != null && channel.canTalk()) {
+                Guild guild = channel.getGuild();
+                String msg = ":fearful: Failed to play " + track.getInfo().title + ": `" + exception.getMessage() + "`";
+                if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY))
+                    channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
+                else
+                    channel.sendMessage(msg).queue();
+            }
+        } catch (Exception ignored) {}
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-        TextChannel channel = currentTrack.getChannel();
-        if (channel != null && channel.canTalk()) {
-            String msg = "Track got stuck, skipping...";
-            channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
-        }
-        track.stop();
+        try {
+            TextChannel channel = currentTrack.getChannel();
+            if (channel != null && channel.canTalk()) {
+                Guild guild = channel.getGuild();
+                String msg = "Track got stuck, skipping...";
+                if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY))
+                    channel.getMessageById(lastMessageId).queue(message -> message.editMessage(msg).queue(), throwable -> channel.sendMessage(msg).queue());
+                else
+                    channel.sendMessage(msg).queue();
+            }
+        } catch (Exception ignored) {}
     }
 
     public enum RepeatMode {

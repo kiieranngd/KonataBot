@@ -39,9 +39,9 @@ public class LoveCommand {
                         event.sendMessage(Emojis.COLD_SWEAT + " I think that I need 2 names to calculate love percentage.").queue();
                         return;
                     }
-                    int percentage = (firstName.hashCode() + secondName.hashCode()) % 101;
+                    int percentage = (firstName.codePoints().sum() + secondName.codePoints().sum()) % 101;
                     String message = message(percentage);
-                    event.sendMessage(new EmbedBuilder().setDescription("\u2763 **LOVE CALCULATOR** \u2763\n\uD83D\uDC97 *`" + firstName + "`*\n\uD83D\uDC97 *`" + secondName + "`*\n**" + percentage + "%** `" + StringUtils.getProgressBar(percentage) + "` " + message).setColor(Color.decode("#388BDF")).build()).queue();
+                    event.sendMessage(new EmbedBuilder().setDescription("\u2763 **LOVE CALCULATOR** \u2763\n\uD83D\uDC97 *`" + firstName + "`*\n\uD83D\uDC97 *`" + secondName + "`*\n**" + percentage + "%** `" + StringUtils.getProgressBar(percentage, 100) + "` " + message).setColor(Color.decode("#388BDF")).build()).queue();
                 })
                 .build();
     }

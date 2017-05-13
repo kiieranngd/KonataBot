@@ -11,4 +11,8 @@ public class TLongMapUtils {
             map.put(key, function.apply(key));
         return map.get(key);
     }
+
+    public static <T> T getOrDefault(TLongObjectMap<T> map, long key, T tDefault) {
+        return map.containsKey(key) ? map.get(key) : tDefault;
+    }
 }

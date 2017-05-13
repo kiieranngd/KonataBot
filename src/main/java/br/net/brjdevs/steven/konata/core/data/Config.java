@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Config {
-    public String token, game, streamUrl, dbotsOrg, dbotsPw, defaultPrefix;
+    public String token, game, streamUrl, dbotsOrg, dbotsPw, defaultPrefix, openWeatherApiKey;
     public List<String> owners;
     public int corePoolSize;
 
@@ -27,6 +27,7 @@ public class Config {
                 object.put("owners", new ArrayList<>());
                 object.put("corePoolSize", 5);
                 object.put("defaultPrefix", "!");
+                object.put("openWeatherApiKey", (String) null);
                 IOUtils.write(path, object.toString());
                 return;
             }
@@ -44,5 +45,6 @@ public class Config {
         this.dbotsOrg = json.getString("dbotsOrg");
         this.dbotsPw = json.getString("dbotsPw");
         this.defaultPrefix = json.getString("defaultPrefix");
+        this.openWeatherApiKey = json.getString("openWeatherApiKey");
     }
 }

@@ -21,15 +21,12 @@ public interface ICommand {
 
     boolean isOwnerOnly();
 
-    Permission[] getRequiredPermission();
-
     class Builder {
         private Consumer<CommandEvent> action;
         private String name, description, usage;
         private String[] aliases;
         Category category;
         private boolean privateAvailable, ownerOnly;
-        Permission[] requiredPermission;
 
         public Builder setAction(Consumer<CommandEvent> action) {
             this.action = action;
@@ -57,11 +54,6 @@ public interface ICommand {
 
         public Builder setPrivateAvailable(boolean privateAvailable) {
             this.privateAvailable = privateAvailable;
-            return this;
-        }
-
-        public Builder setRequiredPermission(Permission... requiredPermission) {
-            this.requiredPermission = requiredPermission;
             return this;
         }
 
@@ -107,10 +99,6 @@ public interface ICommand {
                 @Override
                 public boolean isOwnerOnly() {
                     return ownerOnly;
-                }
-                @Override
-                public Permission[] getRequiredPermission() {
-                    return requiredPermission;
                 }
             };
         }

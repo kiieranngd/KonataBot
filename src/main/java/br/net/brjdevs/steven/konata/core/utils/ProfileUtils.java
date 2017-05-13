@@ -20,7 +20,7 @@ public class ProfileUtils {
     }
 
     public static void takeExperience(ProfileData data, long experience) {
-        data.setExperience(data.getExperience() + experience);
+        data.setExperience(data.getExperience() - experience);
         if (data.getExperience() <= 0 && data.getLevel() > 1) {
             data.setExperience(expForNextLevel(data.getLevel() - 1) + data.getExperience());
             data.setLevel(data.getLevel() - 1);

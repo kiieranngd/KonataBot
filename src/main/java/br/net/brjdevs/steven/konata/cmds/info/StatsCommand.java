@@ -36,8 +36,6 @@ public class StatsCommand {
                 .setCategory(Category.INFORMATIVE)
                 .setAction((event) -> {
                     String[] args = StringUtils.splitArgs(event.getArguments(), 2);
-                    if (args.length == 0)
-                        args = new String[]{""};
                     switch (args[0]) {
                         case "":
                         case "bot":
@@ -66,7 +64,7 @@ public class StatsCommand {
                         case "shards":
                         case "shardinfo":
 
-                            if (args.length < 2) {
+                            if (args[1].isEmpty()) {
                                 int connectedShards = KonataBot.getInstance().getConnectedShards().length;
                                 event.sendMessage("```diff\n" +
                                         (Stream.of(KonataBot.getInstance().getShards())).map(shard -> {

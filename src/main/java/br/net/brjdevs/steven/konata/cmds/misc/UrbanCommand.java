@@ -52,10 +52,11 @@ public class UrbanCommand {
                         EmbedBuilder builder = new EmbedBuilder()
                                 .setFooter("Powered by Urban Dictionary", "https://cdn.discordapp.com/attachments/225694598465454082/248910958280441868/photo.png")
                                 .setTitle(word + " definition by " + author, "https://www.urbandictionary.com/define.php?term=" + query)
-                                .addField("Definition: ", definition == null || definition.isEmpty() ? "No definition provided." : definition.length() > MessageEmbed.VALUE_MAX_LENGTH ? "Definition is too big, click [here](https://www.urbandictionary.com/define.php?term=" + query + ") to see it." : definition, false)
-                                .addField("\u00ad\nExample: ", example == null || example.isEmpty() ? "No example provided." : example.length() > MessageEmbed.VALUE_MAX_LENGTH ? "Example is too big, click [here](https://www.urbandictionary.com/define.php?term=" + query + ") to see it." : example, false)
+                                .addField("\uD83D\uDCD6 Definition: ", "**" + (definition == null || definition.isEmpty() ? "No definition provided." : definition.length() > MessageEmbed.VALUE_MAX_LENGTH ? "Definition is too big, click [here](https://www.urbandictionary.com/define.php?term=" + query + ") to see it." : definition) + "**", false)
+                                .addField("\u2139 Example: ", example == null || example.isEmpty() ? "No example provided." : example.length() > MessageEmbed.VALUE_MAX_LENGTH ? "Example is too big, click [here](https://www.urbandictionary.com/define.php?term=" + query + ") to see it." : example, false)
                                 .addField("\uD83D\uDC4D", String.valueOf(thumbsup), true)
                                 .addField("\uD83D\uDC4E", String.valueOf(thumbsdown), true)
+                                .setThumbnail("https://cdn1.iconfinder.com/data/icons/school-icons-2/512/open_book_pen_marker-256.png")
                                 .setColor(Color.decode("#388BDF"));
                         event.sendMessage(builder.build()).queue();
                     } catch (MalformedURLException ignored) {

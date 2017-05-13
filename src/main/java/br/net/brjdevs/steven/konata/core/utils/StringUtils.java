@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class StringUtils {
 
@@ -15,13 +16,13 @@ public class StringUtils {
     private static final Pattern PATTERN = Pattern.compile("\"([^\"]*)\"|'([^']*)'|[^\\s]+");
 
     public static String[] splitArgs(String input, int size) {
-        input = input.trim().replaceAll("  ", " ");
+        input = input.trim();
         List<String> results = new ArrayList<>();
-        Matcher matcher = PATTERN.matcher(input);
+        Matcher matcher = PATTERN.matcher(input.trim());
         while (matcher.find()) {
-            if (results.size() >= size) {
+            if (results.size() >= size - 1) {
                 String s = input.substring(String.join(" ", results).length());
-                if (s.length() > 3 && results.get(results.size() - 1).contains(" ")) s = s.substring(3);
+                if (s.length() > 3 && results.get(results.size() - 1).contains(" ")) s = s.substring(3).trim();
                 results.add(s);
                 break;
             }
@@ -33,7 +34,17 @@ public class StringUtils {
                 results.add(matcher.group().trim());
             }
         }
-        return results.toArray(new String[0]);
+        String[] result = new String[size];
+        IntStream.range(0, size).forEach(i -> result[i] = getOrDefault(results, i, ""));
+        return result;
+    }
+
+    private static String getOrDefault(List<String> list, int index, String dString) {
+        try {
+            return list.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            return dString;
+        }
     }
 
     public static String toString(User user) {
@@ -68,8 +79,8 @@ public class StringUtils {
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 
-    public static String getProgressBar(long percent) {
-        int activeBlocks = (int) ((float) percent / (float) 100 * 10f);
+    public static String getProgressBar(long l, long total) {
+        int activeBlocks = (int) ((float) l / (float) total * 10f);
         StringBuilder builder = new StringBuilder().append(EMPTY_BLOCK);
         for (int i = 0; i < 10; i++) builder.append(activeBlocks >= i ? ACTIVE_BLOCK : ' ');
         return builder.append(EMPTY_BLOCK).toString();

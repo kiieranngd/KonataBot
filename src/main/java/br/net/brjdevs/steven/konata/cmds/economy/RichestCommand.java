@@ -39,17 +39,22 @@ public class RichestCommand {
                     AtomicInteger i = new AtomicInteger();
 
                     EmbedBuilder embedBuilder = new EmbedBuilder();
-                    embedBuilder.setDescription(getRichestUsers()
-                            .map(pair -> "**#" + i.incrementAndGet() + "** `" + StringUtils.toString(pair.getKey()) + "` - " + pair.getValue() + " coins").collect(Collectors.joining("\n")));
+
+                    embedBuilder.setDescription(getRichestUsers().stream()
+                            .map(pair -> {
+                                String s = StringUtils.toString(pair.getKey());
+                                return String.format("**#%2d** `%s` %s coins\n", i.incrementAndGet(), s, pair.getValue());
+                            }).collect(Collectors.joining("")));
                     embedBuilder.setColor(Color.decode("#388BDF"));
                     embedBuilder.setAuthor("Richest users", null, event.getJDA().getSelfUser().getEffectiveAvatarUrl());
                     embedBuilder.setFooter("Requested by " + StringUtils.toString(event.getAuthor()), event.getAuthor().getEffectiveAvatarUrl());
+                    embedBuilder.setThumbnail("https://cdn.discordapp.com/attachments/278321177573851147/310235379120865280/ccebe0b729ff7530c5e37dbbd9f9938c.png");
                     event.sendMessage(embedBuilder.build()).queue();
                 })
                 .build();
     }
 
-    private static Stream<Pair<User, String>> getRichestUsers() {
+    private static List<Pair<User, String>> getRichestUsers() {
         Cursor<Map> cursor = r.table(ProfileData.DB_TABLE)
                 .orderBy()
                 .optArg("index", r.desc("coins"))
@@ -58,7 +63,7 @@ public class RichestCommand {
                 .run(conn(), OptArgs.of("read_mode", "outdated"));
         List<Map> list = cursor.toList();
         return list.stream().map(map -> Pair.of(getUserById(map.get("id").toString()), map.get("coins").toString()))
-                .filter(p -> Objects.nonNull(p.getKey()));
+                .filter(p -> Objects.nonNull(p.getKey())).collect(Collectors.toList());
     }
 
     private static User getUserById(String id) {
