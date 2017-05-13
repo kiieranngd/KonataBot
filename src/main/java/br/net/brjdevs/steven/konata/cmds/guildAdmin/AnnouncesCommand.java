@@ -26,7 +26,7 @@ public class AnnouncesCommand {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You can't change the greeting message because you don't have the `GREETINGS_FAREWELLS` permission!").queue();
                         return;
                     }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());
@@ -71,7 +71,7 @@ public class AnnouncesCommand {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You can't change the greeting and farewell channel because you don't have the `GREETINGS_FAREWELLS` permission!").queue();
                         return;
                     }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());
@@ -114,7 +114,7 @@ public class AnnouncesCommand {
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.GREETINGS_FAREWELLS)) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `GREETINGS_FAREWELLS` permission!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You can't change the farewell message because you don't have the `GREETINGS_FAREWELLS` permission!").queue();
                         return;
                     }
                     Announces announces = DataManager.db().getAnnounces(event.getGuild());

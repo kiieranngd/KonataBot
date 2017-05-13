@@ -24,7 +24,7 @@ public class PrefixCommand {
                 .setAction((event) -> {
                     GuildData data = GuildData.of(event.getGuild());
                     if (!data.hasPermission(event.getMember(), Permissions.PREFIX_SET)) {
-                        event.sendMessage(Emojis.NO_GOOD + " You don't have the `PREFIX_SET` permission!").queue();
+                        event.sendMessage(Emojis.NO_GOOD + " You can't change the custom prefix because don't have the `PREFIX_SET` permission!").queue();
                         return;
                     }
                     if (event.getArguments().isEmpty()) {

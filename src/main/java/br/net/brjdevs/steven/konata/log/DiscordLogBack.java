@@ -32,7 +32,7 @@ public class DiscordLogBack extends AppenderBase<ILoggingEvent> {
         if (!event.getLevel().isGreaterOrEqual(Level.INFO)) return;
         String toSend = patternLayout.doLayout(event);
         if (previousEvent != null && event.getMessage().equals(previousEvent.getMessage())) return;
-        if (toSend.length() > 1920) toSend = "Received a message but it was too long, Hastebin:" + Hastebin.post(toSend);
+        if (toSend.length() > 1920) toSend = "Received a message but it was too long, Hastebin: " + Hastebin.post(toSend);
         consoleChannel().sendMessage(toSend).queue();
         previousEvent = event;
     }

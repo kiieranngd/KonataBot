@@ -55,7 +55,11 @@ public class CommandManager {
             return;
         }
 
-        cmd.invoke(event);
+        try {
+            cmd.invoke(event);
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            event.sendMessage(getHelp(cmd, event.getMember())).queue();
+        }
     }
 
     public static MessageEmbed getHelp(ICommand cmd, Member member) {

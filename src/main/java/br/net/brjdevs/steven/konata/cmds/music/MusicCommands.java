@@ -33,7 +33,10 @@ public class MusicCommands {
                 .setPrivateAvailable(false)
                 .setCategory(Category.MUSIC)
                 .setAction((event) -> {
-                    if (event.getArguments().isEmpty()) {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.MUSIC)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot request songs because you don't have the `MUSIC` permission!").queue();
+                        return;
+                    } else if (event.getArguments().isEmpty()) {
                         event.sendMessage("You have to tell me a song to play!").queue();
                         return;
                     } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
@@ -57,7 +60,10 @@ public class MusicCommands {
                 .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
-                    if (event.getArguments().isEmpty()) {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.MUSIC)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot request songs because you don't have the `MUSIC` permission!").queue();
+                        return;
+                    } else if (event.getArguments().isEmpty()) {
                         event.sendMessage("You have to tell me a song to play!").queue();
                         return;
                     } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
@@ -80,7 +86,10 @@ public class MusicCommands {
                 .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
-                   if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.MUSIC)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot request songs because you don't have the `MUSIC` permission!").queue();
+                        return;
+                    } else if (KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer().getPlayingTrack() == null) {
                         event.sendMessage("I'm not playing anything!").queue();
                         return;
                     } else if (event.getGuild().getAudioManager().isConnected() && !event.getGuild().getAudioManager().getConnectedChannel().equals(event.getMember().getVoiceState().getChannel())) {
@@ -143,6 +152,10 @@ public class MusicCommands {
                 .setCategory(Category.MUSIC)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.MUSIC)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot request songs because you don't have the `MUSIC` permission!").queue();
+                        return;
+                    }
                     String[] args = event.getArguments().split(" ");
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
                     switch (args[0]) {
@@ -271,6 +284,10 @@ public class MusicCommands {
                 .setDescription("Gives you information on the current song.")
                 .setAction((event) -> {
 
+                    if (!GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.MUSIC)) {
+                        event.sendMessage(Emojis.NO_GOOD + " You cannot request songs because you don't have the `MUSIC` permission!").queue();
+                        return;
+                    }
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
                     if (scheduler.getCurrentTrack() == null) {
                         event.sendMessage("I'm not playing anything!").queue();
