@@ -33,8 +33,6 @@ public class GuildData implements DBObject {
 
     @ConstructorProperties({"id", "customPrefix", "maxSongLength", "permissions"})
     public GuildData(String id, String customPrefix, long maxSongLength, Map<String, String> permissions) {
-        if (permissions == null)
-            permissions = new HashMap<>();
         this.id = id;
         this.customPrefix = customPrefix;
         this.maxSongLength = maxSongLength;
