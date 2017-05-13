@@ -132,7 +132,7 @@ public class KonataBot {
         return musicManager;
     }
     public int getShardId(long guildId) {
-        return (int) (guildId >> 22) % shards.length;
+        return (int) ((guildId >> 22) % shards.length);
     }
 
     public static void main(String[] args) {

@@ -12,15 +12,13 @@ public class ProfileUtils {
             data.setExperience(data.getExperience() - expForNextLevel(data.getLevel()));
             data.setLevel(data.getLevel() + 1);
             //getRegisteredListeners().forEach(listener -> listener.onLevelUp(this));
-        } else if (data.getExperience() <= 0 && data.getLevel() > 1) {
-            data.setExperience(expForNextLevel(data.getLevel() - 1) + data.getExperience());
-            data.setLevel(data.getLevel() - 1);
-            //getRegisteredListeners().forEach(listener -> listener.onLevelDown(this));
         }
     }
 
     public static void takeExperience(ProfileData data, long experience) {
-        data.setExperience(data.getExperience() - experience);
+        long total = data.getExperience() - experience;
+        if (total >= 0 || data.getLevel() > 1)
+            data.setExperience(data.getExperience() - experience);
         if (data.getExperience() <= 0 && data.getLevel() > 1) {
             data.setExperience(expForNextLevel(data.getLevel() - 1) + data.getExperience());
             data.setLevel(data.getLevel() - 1);

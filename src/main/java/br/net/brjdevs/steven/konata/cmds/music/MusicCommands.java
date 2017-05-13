@@ -205,6 +205,7 @@ public class MusicCommands {
                 .setName("Stop Command")
                 .setDescription("Stops the current track and clear the queue.")
                 .setCategory(Category.MUSIC)
+                .setPrivateAvailable(false)
                 .setAction((event) -> {
                     if (!isDJ(event.getMember())) {
                         event.sendMessage(Emojis.NO_GOOD + " You don't have the `DJ_OVERRIDE` permission!!").queue();

@@ -1,5 +1,6 @@
 package br.net.brjdevs.steven.konata.cmds.guildAdmin;
 
+import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
@@ -23,6 +24,10 @@ public class PermissionsCommand {
                 .setAliases("permissions", "perms")
                 .setName("Permissions Command")
                 .setDescription("Manages permissions in your guild")
+                .setUsageInstruction("perms set @User PERMISSION_NAME //gives the mentioned user(s) the given permissions\n" +
+                        "perms unset @User PERMISSION_NAME //takes the mentioned user(s) the given permissions\n" +
+                        "perms get @User //shows you the user's permission")
+                .setCategory(Category.MODERATION)
                 .setPrivateAvailable(false)
                 .setAction((event) -> {
                     String[] args = StringUtils.splitArgs(event.getArguments(), 2);
@@ -177,7 +182,7 @@ public class PermissionsCommand {
                                     failed.add(StringUtils.toString(member.getUser()));
                             });
                             if (!updated.isEmpty())
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " " +msg).queue();
+                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " " + msg).queue();
                             else
                                 event.sendMessage(Emojis.X + " You don't have enough permissions to do that!").queue();
                             data.saveAsync();
@@ -194,6 +199,9 @@ public class PermissionsCommand {
 
                             embedBuilder.setColor(Color.decode("#388BDF"));
                             event.sendMessage(embedBuilder.build()).queue();
+
+                            break;
+                        default:
 
                             break;
                     }
