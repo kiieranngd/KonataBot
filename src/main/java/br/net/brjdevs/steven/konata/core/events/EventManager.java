@@ -21,20 +21,13 @@ import java.util.stream.Collectors;
 public class EventManager implements IEventManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Event Manager");
-    private static List<Class<? extends EventListener>> listenersClasses;
-
-    public static void loadListeners() {
-        if (listenersClasses == null)
-            listenersClasses = new ArrayList<>(new Reflections("br.net.brjdevs.steven.konata").getSubTypesOf(EventListener.class));
-    }
-
     private ExecutorService service;
     private List<EventListener> listeners;
     private Shard shard;
 
     public EventManager(Shard shard) {
         this.shard = shard;
-        listeners = new CopyOnWriteArrayList<>(listenersClasses.stream().map(clazz -> {
+        listeners = new CopyOnWriteArrayList<>(new Reflections("br.net.brjdevs.steven.konata").getSubTypesOf(EventListener.class).stream().map(clazz -> {
             try {
                 return clazz.newInstance();
             } catch (Exception e) {

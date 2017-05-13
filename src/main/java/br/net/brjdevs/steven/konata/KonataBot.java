@@ -148,8 +148,6 @@ public class KonataBot {
             DataManager.conn();
             LOGGER.info("Connected!");
 
-            EventManager.loadListeners();
-
             Config config = new Config(Paths.get("config.json").toAbsolutePath());
 
             instance = new KonataBot(config);
@@ -168,6 +166,7 @@ public class KonataBot {
             instance.shards = new Shard[shardTotal];
             for (int i = 0; i < shardTotal; i++) {
                 instance.shards[i] = new Shard(i, shardTotal);
+                Thread.sleep(5000);
             }
             LOGGER.info("Finished loading all shards!");
 
