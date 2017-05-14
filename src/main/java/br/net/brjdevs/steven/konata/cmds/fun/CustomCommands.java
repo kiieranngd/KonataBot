@@ -30,7 +30,7 @@ public class CustomCommands {
                 .setUsageInstruction(
                         "cmds list <page>\n" +
                                 "cmds create [command_name] [command answer]\n" +
-                                "\\*cmds destroy [command_name]\n" +
+                                "\\*cmds delete [command_name]\n" +
                                 "\\*cmds addanswer [command_name] [answer]\n" +
                                 "\\*cmds rmanswer [command_name] [answer_index]\n" +
                                 "\n" +
@@ -81,7 +81,7 @@ public class CustomCommands {
                             new CustomCommand(event.getGuild(), event.getMember(), args[1], args[2]).saveAsync();
                             event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Created custom command " + args[1] + ", you can add more answers to it if you'd like using `konata cmds addanswer " + args[1] + " [answer]` " + Emojis.WINK).queue();
                             break;
-                        case "destroy":
+                        case "delete":
                         case "del":
                         case "remove":
                             CustomCommand cmd = DataManager.db().getCustomCommand(event.getGuild(), args[1]);
@@ -90,7 +90,7 @@ public class CustomCommands {
                                 return;
                             }
                             if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot delete this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             }
                             cmd.deleteAsync();
@@ -103,7 +103,7 @@ public class CustomCommands {
                                 return;
                             }
                             if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot delete this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             } else if (cmd.getAnswers().contains(args[2])) {
                                 event.sendMessage("Oh well, this command already has this answer! " + Emojis.SWEAT_SMILE).queue();
@@ -129,7 +129,7 @@ public class CustomCommands {
                                 return;
                             }
                             if (!cmd.getCreatorId().equals(event.getAuthor().getId()) && !GuildData.of(event.getGuild()).hasPermission(event.getMember(), Permissions.CUSTOM_CMDS_MANAGE)) {
-                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot destroy this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
+                                event.sendMessage(Emojis.NO_GOOD + " Nope, you cannot delete this command because you are not its owner and you don't have `CUSTOM_CMDS_MANAGE` permission.").queue();
                                 return;
                             }
                             cmd.getAnswers().remove(i - 1);

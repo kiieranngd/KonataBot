@@ -10,6 +10,7 @@ import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
@@ -26,8 +27,8 @@ public class PermissionsCommand {
                 .setAliases("permissions", "perms")
                 .setName("Permissions Command")
                 .setDescription("Manages permissions in your guild")
-                .setUsageInstruction("perms set @User PERMISSION_NAME //gives the mentioned user(s) the given permissions\n" +
-                        "perms unset @User PERMISSION_NAME //takes the mentioned user(s) the given permissions\n" +
+                .setUsageInstruction("perms set @User PERMISSION_NAME //gives the mentioned user(s) given permissions\n" +
+                        "perms unset @User PERMISSION_NAME //removes the mentioned user(s) given permissions\n" +
                         "perms get @User //shows you the user's permission\n" +
                         "perms default [set/unset] PERMISSION_NAME //sets default permissions; works the same way as the other commands\n" +
                         "perms default //shows you the default permissions")
@@ -214,39 +215,86 @@ public class PermissionsCommand {
                             switch (args[0]) {
                                 case "set":
 
-                                    long defaultPerm = 0;
+                                    toBeSet = 0;
                                     for (String perm : args[1].split(" ")) {
                                         if (perm.isEmpty())
                                             continue;
                                         long l = Permissions.perms.getOrDefault(perm, -1L);
                                         if (l > -1) {
-                                            defaultPerm |= l;
+                                            toBeSet |= l;
                                         } else {
                                             event.sendMessage(Emojis.X + " No such permission `" + perm + "`.").queue();
                                             return;
                                         }
                                     }
+                                    long oldDefaultPerm = data.getPermissions().getOrDefault("default", Permissions.BASE_USER);
+                                    long fset = toBeSet;
+                                    long newPerm = oldDefaultPerm | toBeSet;
+                                    if (!data.hasPermission(event.getMember(), newPerm)) {
+                                        event.sendMessage(Emojis.X + " You don't have enough permissions to do that!").queue();
+                                        return;
+                                    }
                                     event.getGuild().getMembers().stream()
                                             .filter(m -> data.getPermissions().containsKey(m.getUser().getId()))
-                                            .forEach(m -> data.setPermission(event.getMember(), m, defaultPerm, 0));
-                                    data.getPermissions().put("default", defaultPerm);
+                                            .forEach(m -> data.setPermission(event.getMember(), m, fset, 0));
+                                    data.getPermissions().put("default", newPerm);
+                                    perms = Permissions.toCollection(data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
+
+                                    embedBuilder = new EmbedBuilder();
+
+                                    embedBuilder.setThumbnail(event.getGuild().getIconUrl());
+                                    embedBuilder.setAuthor(event.getGuild().getName() + " default permissions", null, event.getGuild().getIconUrl());
+                                    embedBuilder.setDescription(String.join(", ", perms) + "\n\nRaw: " + data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
+
+                                    embedBuilder.setColor(Color.decode("#388BDF"));
+                                    event.sendMessage(
+                                            new MessageBuilder()
+                                                    .setEmbed(embedBuilder.build())
+                                                    .append("Now these are the default permissions for this guild:")
+                                                    .build()
+                                    ).queue();
+                                    data.saveAsync();
                                     break;
                                 case "unset":
+                                    toBeUnset = 0;
                                     for (String perm : args[1].split(" ")) {
                                         if (perm.isEmpty())
                                             continue;
                                         long l = Permissions.perms.getOrDefault(perm, -1L);
                                         if (l > -1) {
-                                            defaultPerm |= l;
+                                            toBeUnset |= l;
                                         } else {
                                             event.sendMessage(Emojis.X + " No such permission `" + perm + "`.").queue();
                                             return;
                                         }
                                     }
+                                    oldDefaultPerm = data.getPermissions().getOrDefault("default", Permissions.BASE_USER);
+                                    long funset = toBeUnset;
+                                    newPerm = oldDefaultPerm ^ (oldDefaultPerm & toBeUnset);
+                                    if (!data.hasPermission(event.getMember(), newPerm)) {
+                                        event.sendMessage(Emojis.X + " You don't have enough permissions to do that!").queue();
+                                        return;
+                                    }
                                     event.getGuild().getMembers().stream()
                                             .filter(m -> data.getPermissions().containsKey(m.getUser().getId()))
-                                            .forEach(m -> data.setPermission(event.getMember(), m, 0, defaultPerm));
-                                    data.getPermissions().put("default", defaultPerm);
+                                            .forEach(m -> data.setPermission(event.getMember(), m, 0, funset));
+                                    data.getPermissions().put("default", newPerm);
+                                    perms = Permissions.toCollection(data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
+
+                                    embedBuilder = new EmbedBuilder();
+
+                                    embedBuilder.setThumbnail(event.getGuild().getIconUrl());
+                                    embedBuilder.setAuthor(event.getGuild().getName() + " default permissions", null, event.getGuild().getIconUrl());
+                                    embedBuilder.setDescription(String.join(", ", perms) + "\n\nRaw: " + data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
+
+                                    embedBuilder.setColor(Color.decode("#388BDF"));
+                                    event.sendMessage(
+                                            new MessageBuilder()
+                                            .setEmbed(embedBuilder.build())
+                                            .append("Now these are the default permissions for this guild:")
+                                            .build()
+                                    ).queue();
+                                    data.saveAsync();
                                     break;
                                 default:
                                     perms = Permissions.toCollection(data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
@@ -254,14 +302,13 @@ public class PermissionsCommand {
                                     embedBuilder = new EmbedBuilder();
 
                                     embedBuilder.setThumbnail(event.getGuild().getIconUrl());
-                                    embedBuilder.setAuthor(event.getGuild().getIconId() + " default permissions", null, event.getGuild().getIconUrl());
+                                    embedBuilder.setAuthor(event.getGuild().getName() + " default permissions", null, event.getGuild().getIconUrl());
                                     embedBuilder.setDescription(String.join(", ", perms) + "\n\nRaw: " + data.getPermissions().getOrDefault("default", Permissions.BASE_USER));
 
                                     embedBuilder.setColor(Color.decode("#388BDF"));
                                     event.sendMessage(embedBuilder.build()).queue();
                                     break;
                             }
-                            data.saveAsync();
                             break;
                         default:
                             event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getMember())).queue();

@@ -16,7 +16,7 @@ public class CoinsFoundEvent extends Event {
         super(data, textChannel, member);
         int coins = (r.nextInt(200 - 50)) + 50;
         textChannel.sendMessage(member.getAsMention() + " - You found " + coins + " coins dropped on the ground! You have three options:\n" +
-                "1. `pick` - You db the money and nothing else happens.\n" +
+                "1. `pick` - You get the money and nothing else happens.\n" +
                 "2. `find owner` - If you find the owner, he might reward you!\n" +
                 "3. `ignore` - If you are stupid enough, choose this.")
                 .queue(msg ->

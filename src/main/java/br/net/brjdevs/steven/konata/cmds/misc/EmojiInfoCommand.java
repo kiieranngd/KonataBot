@@ -15,7 +15,7 @@ public class EmojiInfoCommand {
                 .setDescription("Returns emoji or character info.")
                 .setAction((event) -> {
                     if (event.getArguments().isEmpty()) {
-                        event.sendMessage("You can use this command to db unicodes, just tell me an emoji or character :eyes:").queue();
+                        event.sendMessage("You can use this command to get unicodes, just tell me an emoji or character :eyes:").queue();
                         return;
                     }
                     String unicode = toUnicode(event.getArguments());

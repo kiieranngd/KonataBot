@@ -2,6 +2,7 @@ package br.net.brjdevs.steven.konata.cmds.economy;
 
 import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
+import br.net.brjdevs.steven.konata.core.commands.CommandManager;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
@@ -109,10 +110,11 @@ public class BetCommand {
                             embedBuilder.setAuthor(creator.getName() + "'s bet", null, creator.getEffectiveAvatarUrl());
                             embedBuilder.setDescription("Total users participating: " + bet.map.size() + "\n\n" +
                                     Arrays.stream(bet.map.keys()).sorted().mapToObj(l -> "**#" + counter.incrementAndGet() + "** `" + StringUtils.toString(event.getJDA().getUserById(l)) + "` - " + bet.map.get(l) + " coins").collect(Collectors.joining("\n")));
-                            embedBuilder.setFooter("Total coins: " +  bet.getTotalAmount(), null);
+                            embedBuilder.setFooter("Total coins: " + bet.getTotalAmount(), null);
 
                             event.sendMessage(embedBuilder.build()).queue();
                             break;
+
                         case "end":
                             bet = Bet.getBet(((TextChannel) event.getChannel()));
                             if (bet == null) {
@@ -132,6 +134,9 @@ public class BetCommand {
                             data = ProfileData.of(winner);
                             ProfileUtils.addCoins(data, prize);
                             data.saveAsync();
+                            break;
+                        default:
+                            event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getMember())).queue();
                             break;
                     }
                 })

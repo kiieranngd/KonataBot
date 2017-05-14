@@ -15,10 +15,17 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -152,12 +159,10 @@ public class KonataBot {
 
             instance = new KonataBot(config);
 
-            HttpResponse<JsonNode> shards = Unirest.get("https://discordapp.com/api/gateway/bot")
-                    .header("Authorization", "Bot " + config.token)
-                    .header("Content-Type", "application/json")
-                    .asJson();
-
-            int shardTotal = shards.getBody().getObject().getInt("shards");
+            HttpGet get = new HttpGet("https://discordapp.com/api/gateway/bot");
+            get.addHeader("Authorization", "Bot " + config.token);
+            get.addHeader("Content-type", "application/json");
+            int shardTotal = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build().execute(get).getEntity())).getInt("shards");
 
             LOGGER.info("Starting KonataBot instance with " + shardTotal + " shards...");
 
@@ -181,6 +186,12 @@ public class KonataBot {
             instance.commandManager = new CommandManager();
 
             TaskManager.startAsyncTask("DBots Updater", (service) -> {
+                HttpClient client = HttpClientBuilder.create().build();
+                long userId = instance.shards[0].getJDA().getSelfUser().getIdLong();
+                HttpPost dbotsOrg = new HttpPost("https://bots.discord.pw/api/bots/" + userId + "/stats");
+                HttpPost dbotsPw = new HttpPost("https://discordbots.org/api/bots/" + userId + "/stats");
+                dbotsOrg.addHeader("Authorization", config.dbotsOrg);
+                dbotsPw.addHeader("Authorization", config.dbotsPw);
                 for (Shard shard : instance.shards) {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("server_count", shard.getJDA().getGuilds().size());
@@ -188,27 +199,33 @@ public class KonataBot {
                         jsonObject.put("shard_id", shard.getId());
                         jsonObject.put("shard_count", shardTotal);
                     }
-
                     try {
-                        if (!config.dbotsPw.isEmpty())
-                            Unirest.post("https://bots.discord.pw/api/bots/" + shard.getJDA().getSelfUser().getId() + "/stats")
-                                    .header("Authorization", config.dbotsPw)
-                                    .header("Content-Type", "application/json")
-                                    .body(jsonObject.toString())
-                                    .asJson();
-                    } catch (UnirestException e) {
-                        LOGGER.error("Failed to update shard_count at discordbots.pw!");
-                    }
+                        StringEntity entity = new StringEntity(jsonObject.toString());
+                        dbotsOrg.setEntity(entity);
+                        dbotsPw.setEntity(entity);
 
-                    try {
-                        if (!config.dbotsOrg.isEmpty())
-                            Unirest.post("https://discordbots.org/api/bots/" + shard.getJDA().getSelfUser().getId() + "/stats")
-                                    .header("Authorization", config.dbotsOrg)
-                                    .header("Content-Type", "application/json")
-                                    .body(jsonObject.toString())
-                                    .asJson();
-                    } catch (UnirestException e) {
-                        LOGGER.error("Failed to update shard_count at discordbots.org!");
+                        try {
+                            if (!config.dbotsPw.isEmpty()) {
+                                int result = client.execute(dbotsPw).getStatusLine().getStatusCode();
+                                if (result != 200) {
+                                    LOGGER.error("Failed to update server count at discordbots.pw! Status code: " + result);
+                                }
+                            }
+                        } catch (IOException e) {
+                            LOGGER.error("Failed to update shard_count at discordbots.pw!");
+                        }
+
+                        try {
+                            if (!config.dbotsOrg.isEmpty()) {
+                                int result = client.execute(dbotsOrg).getStatusLine().getStatusCode();
+                                if (result != 200) {
+                                    LOGGER.error("Failed to update server count at discordbots.org! Status code: " + result);
+                                }
+                            }
+                        } catch (IOException e) {
+                            LOGGER.error("Failed to update shard_count at discordbots.org!");
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
             }, 3600);
