@@ -188,8 +188,8 @@ public class KonataBot {
             TaskManager.startAsyncTask("DBots Updater", (service) -> {
                 HttpClient client = HttpClientBuilder.create().build();
                 long userId = instance.shards[0].getJDA().getSelfUser().getIdLong();
-                HttpPost dbotsOrg = new HttpPost("https://bots.discord.pw/api/bots/" + userId + "/stats");
-                HttpPost dbotsPw = new HttpPost("https://discordbots.org/api/bots/" + userId + "/stats");
+                HttpPost dbotsOrg = new HttpPost("https://discordbots.org/api/bots/" + userId + "/stats");
+                HttpPost dbotsPw = new HttpPost("https://bots.discord.pw/api/bots/" + userId + "/stats");
                 dbotsOrg.addHeader("Authorization", config.dbotsOrg);
                 dbotsPw.addHeader("Authorization", config.dbotsPw);
                 for (Shard shard : instance.shards) {
