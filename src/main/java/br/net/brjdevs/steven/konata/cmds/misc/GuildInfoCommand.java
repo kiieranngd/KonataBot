@@ -3,6 +3,7 @@ package br.net.brjdevs.steven.konata.cmds.misc;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -39,7 +40,7 @@ public class GuildInfoCommand {
                     embedBuilder.setFooter("Requested by " + StringUtils.toString(event.getAuthor()),
                             event.getAuthor().getEffectiveAvatarUrl());
                     embedBuilder.setColor(Color.decode("#388BDF"));
-                    embedBuilder.setTitle("Guild information on " + guild.getName(), null);
+                    embedBuilder.setTitle(Emojis.DISCORD + " Guild information on " + guild.getName(), null);
                     embedBuilder.addField("Owner", StringUtils.toString(guildOwner.getUser()), true);
                     embedBuilder.addField("ID", guild.getId(), true);
                     embedBuilder.addField("Region", guild.getRegion().toString(), true);

@@ -60,7 +60,7 @@ public class AudioUtils {
         }
         Message sent = tc.sendMessage("Connecting to `" + vc.getName() + "`...").complete();
         tc.getGuild().getAudioManager().openAudioConnection(vc);
-        sent.editMessage(Emojis.BALLOT_CHECK_MARK + " Connected to " + vc.getName() + ".").queue();
+        sent.editMessage(Emojis.CHECK_MARK + " Connected to " + vc.getName() + ".").queue();
         while (!tc.getGuild().getAudioManager().isConnected()) {
             try {
                 Thread.sleep(150);

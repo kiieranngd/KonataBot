@@ -24,6 +24,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -184,6 +185,8 @@ public class KonataBot {
             instance.musicManager = new KonataMusicManager();
 
             instance.commandManager = new CommandManager();
+
+            //new SpringApplication(WebServer.class).run();
 
             TaskManager.startAsyncTask("DBots Updater", (service) -> {
                 HttpClient client = HttpClientBuilder.create().build();

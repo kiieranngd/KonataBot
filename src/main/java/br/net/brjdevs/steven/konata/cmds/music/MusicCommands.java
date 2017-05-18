@@ -12,7 +12,6 @@ import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import gnu.trove.list.TLongList;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -102,15 +101,15 @@ public class MusicCommands {
                     int requiredVotes = scheduler.getRequiredVotes();
                     if (voteSkips.contains(event.getAuthor().getIdLong())) {
                         voteSkips.remove(event.getAuthor().getIdLong());
-                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Well, you already voted to skip this song so I removed your vote. " + (requiredVotes - voteSkips.size()) + " more votes are necessary to skip!").queue();
+                        event.sendMessage(Emojis.CHECK_MARK + " Well, you already voted to skip this song so I removed your vote. " + (requiredVotes - voteSkips.size()) + " more votes are necessary to skip!").queue();
                     } else {
                         voteSkips.add(event.getAuthor().getIdLong());
                         if (voteSkips.size() >= requiredVotes || isDJ(event.getMember()) || scheduler.getCurrentTrack() != null && scheduler.getCurrentTrack().getDJ() != null && scheduler.getCurrentTrack().getDJ().equals(event.getAuthor())) {
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reached required amount of votes, skipping...").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Reached required amount of votes, skipping...").queue();
                             scheduler.skip();
                             return;
                         }
-                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Your vote to skip this song has been submitted. " + (requiredVotes - voteSkips.size()) + " more votes are required to skip.").queue();
+                        event.sendMessage(Emojis.CHECK_MARK + " Your vote to skip this song has been submitted. " + (requiredVotes - voteSkips.size()) + " more votes are required to skip.").queue();
                     }
                 })
                 .build();
@@ -135,7 +134,7 @@ public class MusicCommands {
                         return;
                     }
                     TrackScheduler scheduler = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler();
-                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Skipping...").queue();
+                    event.sendMessage(Emojis.CHECK_MARK + " Skipping...").queue();
                     scheduler.skip();
                 })
                 .build();
@@ -179,7 +178,7 @@ public class MusicCommands {
                                 return;
                             }
                             scheduler.getQueue().remove(trackContext);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed `" + trackContext.getTrack().getInfo().title + "` from queue!").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Removed `" + trackContext.getTrack().getInfo().title + "` from queue!").queue();
                             break;
                         default:
 
@@ -201,7 +200,7 @@ public class MusicCommands {
                             eb.setDescription((currentTrack != null ? "__**Now playing:**__ " + currentTrack.getTrack().getInfo().title + " (`" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "` / `" + AudioUtils.format(currentTrack.getTrack().getDuration()) + "`) " + (currentTrack.getDJ() != null ? " DJ: " + StringUtils.toString(currentTrack.getDJ()) : "") + "\n\n" : "") + (scheduler.getRepeatMode() != null ? "\uD83D\uDD01" : "\u25b6") + " " + AudioUtils.getProgressBar(currentTrack.getTrack().getPosition(), currentTrack.getTrack().getDuration()) + tracks.stream().filter(track -> {
                                 int index = tracks.indexOf(track);
                                 return index < max && index >= min;
-                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** (" + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + ")[" + track.getTrack().getInfo().uri + "] (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
+                            }).map(track -> "**#" + (tracks.indexOf(track) + 1) + "** [" + StringUtils.escapeFormatting(track.getTrack().getInfo().title) + "](" + track.getTrack().getInfo().uri + ") (`" + AudioUtils.format(track.getTrack().getDuration()) + "`) " + (track.getDJ() != null ? " DJ: " + StringUtils.toString(track.getDJ()): "")).collect(Collectors.joining("\n")));
                             eb.setFooter("Total queue size: " + tracks.size() + " songs (Total estimated time: " + AudioUtils.format(tracks.stream().mapToLong(track -> track.getTrack().getDuration()).sum()) + ")", null);
                             eb.setColor(Color.decode("#388BDF"));
                             event.sendMessage(eb.build()).queue();
@@ -228,7 +227,7 @@ public class MusicCommands {
                         return;
                     }
                     int removedSongs = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getTrackScheduler().stop();
-                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Stopped the current track and removed " + removedSongs + " songs from queue.").queue();
+                    event.sendMessage(Emojis.CHECK_MARK + " Stopped the current track and removed " + removedSongs + " songs from queue.").queue();
 
                 })
                 .build();
@@ -249,7 +248,7 @@ public class MusicCommands {
                         event.sendMessage("I'm haven't played anything so I can't restart!").queue();
                         return;
                     }
-                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Restarting track...").queue();
+                    event.sendMessage(Emojis.CHECK_MARK + " Restarting track...").queue();
 
                 })
                 .build();
@@ -270,7 +269,7 @@ public class MusicCommands {
                     }
                     AudioPlayer player = KonataBot.getInstance().getMusicManager().getMusicManager(event.getGuild()).getAudioPlayer();
                     player.setPaused(!player.isPaused());
-                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + (player.isPaused() ? " The player is now paused. Use `konata pause` again to unpause." : "The player is no longer paused.")).queue();
+                    event.sendMessage(Emojis.CHECK_MARK + (player.isPaused() ? " The player is now paused. Use `konata pause` again to unpause." : "The player is no longer paused.")).queue();
                 })
                 .build();
     }
@@ -332,19 +331,19 @@ public class MusicCommands {
                         case "queue":
                             if (TrackScheduler.RepeatMode.QUEUE.equals(scheduler.getRepeatMode())) {
                                 scheduler.setRepeatMode(null);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat queue mode off!").queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " Toggled the repeat queue mode off!").queue();
                             } else {
                                 scheduler.setRepeatMode(TrackScheduler.RepeatMode.QUEUE);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat queue mode on!").queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " Toggled the repeat queue mode on!").queue();
                             }
                             break;
                         default:
                             if (scheduler.getRepeatMode() != null) {
                                 scheduler.setRepeatMode(null);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat mode off!").queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " Toggled the repeat mode off!").queue();
                             } else {
                                 scheduler.setRepeatMode(TrackScheduler.RepeatMode.SONG);
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Toggled the repeat song mode on!").queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " Toggled the repeat song mode on!").queue();
                             }
                             break;
                     }

@@ -43,6 +43,10 @@ public class GuildData implements DBObject {
         this(guild.getId(), null, AudioLoader.MAX_SONG_LENGTH, new HashMap<>());
     }
 
+    public GuildData(String id) {
+        this(id, null, AudioLoader.MAX_SONG_LENGTH, new HashMap<>());
+    }
+
     public String getId() {
         return id;
     }

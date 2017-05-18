@@ -62,7 +62,7 @@ public class BetCommand {
                             }
                             data.saveAsync();
                             new Bet(((TextChannel) event.getChannel()), event.getAuthor(), i);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Started a bet in " + ((TextChannel) event.getChannel()).getAsMention() + " with " + i + " coins!").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Started a bet in " + ((TextChannel) event.getChannel()).getAsMention() + " with " + i + " coins!").queue();
                             break;
                         case "join":
                             bet = Bet.getBet(((TextChannel) event.getChannel()));
@@ -95,7 +95,7 @@ public class BetCommand {
                             }
                             data.saveAsync();
                             bet.modifyUser(event.getAuthor(), amount);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " You bet " + (data.getCoins() == 0 ? "all your" : amount) + " coins! (total coins: " + bet.getTotalAmount() + ")").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " You bet " + (data.getCoins() == 0 ? "all your" : amount) + " coins! (total coins: " + bet.getTotalAmount() + ")").queue();
                             break;
                         case "info":
                             bet = Bet.getBet(((TextChannel) event.getChannel()));

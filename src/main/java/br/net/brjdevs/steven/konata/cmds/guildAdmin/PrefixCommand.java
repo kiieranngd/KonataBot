@@ -36,7 +36,7 @@ public class PrefixCommand {
                     } else if (event.getArguments().equals("reset")) {
                         String prefix = data.getCustomPrefix();
                         data.setCustomPrefix(null);
-                        event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reseted the custom prefix for this guild, this means I'll no longer respond to `" + prefix + "`.").queue();
+                        event.sendMessage(Emojis.CHECK_MARK + " Reseted the custom prefix for this guild, this means I'll no longer respond to `" + prefix + "`.").queue();
                         data.save();
                         return;
                     } else if (event.getArguments().equals(data.getCustomPrefix()) || event.getArguments().equals(KonataBot.getInstance().getConfig().defaultPrefix)) {
@@ -44,7 +44,7 @@ public class PrefixCommand {
                         return;
                     }
                     data.setCustomPrefix(event.getArguments());
-                    event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Set the custom prefix to `" + event.getArguments() + "`, this means you can start commands with `" + event.getArguments() + "` instead of `konata `. *e.g.: " + event.getArguments() + "help* ").queue();
+                    event.sendMessage(Emojis.CHECK_MARK + " Set the custom prefix to `" + event.getArguments() + "`, this means you can start commands with `" + event.getArguments() + "` instead of `konata `. *e.g.: " + event.getArguments() + "help* ").queue();
                     data.saveAsync();
                 })
                 .build();

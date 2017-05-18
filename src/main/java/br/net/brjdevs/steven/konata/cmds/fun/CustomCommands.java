@@ -79,7 +79,7 @@ public class CustomCommands {
                                 return;
                             }
                             new CustomCommand(event.getGuild(), event.getMember(), args[1], args[2]).saveAsync();
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Created custom command " + args[1] + ", you can add more answers to it if you'd like using `konata cmds addanswer " + args[1] + " [answer]` " + Emojis.WINK).queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Created custom command " + args[1] + ", you can add more answers to it if you'd like using `konata cmds addanswer " + args[1] + " [answer]` " + Emojis.WINK).queue();
                             break;
                         case "delete":
                         case "del":
@@ -94,7 +94,7 @@ public class CustomCommands {
                                 return;
                             }
                             cmd.deleteAsync();
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Deleted custom command `" + args[1] + "`.").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Deleted custom command `" + args[1] + "`.").queue();
                             break;
                         case "addanswer":
                             cmd = DataManager.db().getCustomCommand(event.getGuild(), args[1]);
@@ -111,7 +111,7 @@ public class CustomCommands {
                             }
                             cmd.getAnswers().add(args[2]);
                             cmd.saveAsync();
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Added another answer to this custom command!").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Added another answer to this custom command!").queue();
                             break;
                         case "rmanswer":
                             if (!args[2].matches("[0-9]+")) {
@@ -137,7 +137,7 @@ public class CustomCommands {
                                 cmd.saveAsync();
                             else
                                 cmd.deleteAsync();
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed answer from custom command `" + args[1] + "`.").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Removed answer from custom command `" + args[1] + "`.").queue();
                             break;
                         default:
                             event.sendMessage(CommandManager.getHelp(event.getCommand(), event.getMember())).queue();

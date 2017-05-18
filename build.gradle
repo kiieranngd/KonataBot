@@ -5,6 +5,7 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'com.sedmelluq.jdaction' version '1.0.1'
+
 }
 
 mainClassName = "br.net.brjdevs.steven.konata.KonataBot"
@@ -25,13 +26,14 @@ dependencies {
     compile 'com.google.guava:guava:21.0'
     compile 'com.rethinkdb:rethinkdb-driver:2.3.3'
     compile 'net.dv8tion:JDA:3.0.0_191'
-    compile 'com.sedmelluq:lavaplayer:1.2.36'
+    compile 'com.sedmelluq:lavaplayer:1.2.39'
     compile 'org.reflections:reflections:0.9.10'
     compile 'ch.qos.logback:logback-classic:0.9.26'
     compile 'br.com.brjdevs:utils:1.0.0_4'
     compile 'br.com.brjdevs:snowflakes:1.0.0_1'
     compile 'com.fathzer:javaluator:3.0.0'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.0.pr1'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf:1.5.3.RELEASE'
 }
 
 task wrapper(type: Wrapper) {
@@ -55,6 +57,7 @@ compileJava {
     dependsOn prepareSource
 }
 
+shadowJar.archiveName = 'KonataBot.jar'
 
 
 class Version {

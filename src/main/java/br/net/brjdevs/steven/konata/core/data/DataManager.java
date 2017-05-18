@@ -5,6 +5,7 @@ import br.net.brjdevs.steven.konata.core.data.guild.CustomCommand;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.data.user.ProfileData;
 import br.net.brjdevs.steven.konata.core.poll.Poll;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rethinkdb.gen.ast.Table;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
@@ -84,31 +85,38 @@ public class DataManager {
     }
 
     public GuildData getGuild(Guild guild) {
-        long id = guild.getIdLong();
+        return getGuild(guild.getIdLong());
+    }
+
+    public GuildData getGuild(long id) {
         if (guilds.containsKey(id))
             return guilds.getData(id);
         Table table = r.table(GuildData.DB_TABLE);
         GuildData guildData;
-        if ((guildData = table.get(guild.getId()).run(conn(), GuildData.class)) != null) {
+        if ((guildData = table.get(String.valueOf(id)).run(conn(), GuildData.class)) != null) {
             guilds.put(id, guildData);
             return guildData;
         } else {
-            guildData = new GuildData(guild);
+            guildData = new GuildData(String.valueOf(id));
             guilds.put(id, guildData);
             return guildData;
 
         }
     }
 
-    public Announces getAnnounces(Guild guild) {
+    public Announces getAnnounces(String id) {
         Table table = r.table(Announces.DB_TABLE);
         Announces announces;
-        if ((announces = table.get(guild.getId()).run(conn(), Announces.class)) != null) {
+        if ((announces = table.get(id).run(conn(), Announces.class)) != null) {
             return announces;
         } else {
-            announces = new Announces(guild.getId(), null, null,null);
+            announces = new Announces(id, null, null,null);
             return announces;
 
         }
+    }
+
+    public Announces getAnnounces(Guild guild) {
+        return getAnnounces(guild.getId());
     }
 }

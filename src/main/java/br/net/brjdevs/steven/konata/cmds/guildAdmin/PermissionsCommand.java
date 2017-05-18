@@ -1,6 +1,5 @@
 package br.net.brjdevs.steven.konata.cmds.guildAdmin;
 
-import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.CommandManager;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
@@ -17,7 +16,6 @@ import net.dv8tion.jda.core.entities.Role;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PermissionsCommand {
 
@@ -110,7 +108,7 @@ public class PermissionsCommand {
                                     failed.add(StringUtils.toString(member.getUser()));
                             });
                             if (!updated.isEmpty())
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " " + msg).queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " " + msg).queue();
                             else
                                 event.sendMessage(Emojis.X + " You don't have enough permissions to do that!").queue();
                             data.saveAsync();
@@ -187,7 +185,7 @@ public class PermissionsCommand {
                                     failed.add(StringUtils.toString(member.getUser()));
                             });
                             if (!updated.isEmpty())
-                                event.sendMessage(Emojis.BALLOT_CHECK_MARK + " " + msg).queue();
+                                event.sendMessage(Emojis.CHECK_MARK + " " + msg).queue();
                             else
                                 event.sendMessage(Emojis.X + " You don't have enough permissions to do that!").queue();
                             data.saveAsync();

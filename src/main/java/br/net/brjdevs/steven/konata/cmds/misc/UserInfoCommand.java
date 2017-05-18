@@ -4,8 +4,10 @@ import br.net.brjdevs.steven.konata.KonataBot;
 import br.net.brjdevs.steven.konata.core.commands.Category;
 import br.net.brjdevs.steven.konata.core.commands.ICommand;
 import br.net.brjdevs.steven.konata.core.commands.RegisterCommand;
+import br.net.brjdevs.steven.konata.core.utils.Emojis;
 import br.net.brjdevs.steven.konata.core.utils.StringUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
@@ -33,7 +35,7 @@ public class UserInfoCommand {
                     OffsetDateTime creation = user.getCreationTime();
                     String createdAt = StringUtils.capitalize(creation.getDayOfWeek().toString().substring(0, 3)) + ", " + creation.getDayOfMonth() + " " + StringUtils.capitalize(creation.getMonth().toString().substring(0, 3)) + " " + creation.getYear() + " " + String.format("%02d", creation.getHour()) + ":" + String.format("%02d", creation.getMinute());
                     EmbedBuilder embed = new EmbedBuilder();
-                    embed.setTitle("\uD83D\uDC65 User information on " + StringUtils.toString(user), null);
+                    embed.setTitle((!user.isBot() ? "\uD83D\uDC65" : Emojis.BOT_TAG) + " User information on " + StringUtils.toString(user), null);
                     if (member != null && member.getNickname() != null)
                         embed.addField("Nickname", member.getNickname(), true);
                     embed.addField("User ID", user.getId(), true);
@@ -47,7 +49,7 @@ public class UserInfoCommand {
                     embed.addField("Account creation date", createdAt, true);
                     embed.addField("Mutual guilds", String.valueOf(Arrays.stream(KonataBot.getInstance().getShards()).mapToLong(shard -> shard.getJDA().getMutualGuilds(event.getAuthor()).size()).sum()), true);
                     if (member != null) {
-                        embed.addField("Status", member.getOnlineStatus().name(), true);
+                        embed.addField("Status", map(member.getOnlineStatus()) + " " + member.getOnlineStatus().name(), true);
                         embed.addField("Roles", String.valueOf(member.getRoles().size()), true);
                         List<Member> joins = new ArrayList<>(event.getGuild().getMembers());
                         joins.sort(Comparator.comparing(Member::getJoinDate));
@@ -78,12 +80,29 @@ public class UserInfoCommand {
                         embed.addField("Join Position", String.valueOf(joinPos), true);
                         embed.addField("Join Order", str, false);
                     }
-                    Color color = member.getColor() == null ? Color.decode("#FFA300") : member.getColor();
+                    Color color = member != null && member.getColor() == null ? Color.decode("#FFA300") : member.getColor();
                     embed.setColor(color);
                     embed.setThumbnail(user.getEffectiveAvatarUrl());
                     embed.setFooter("Requested by " + StringUtils.toString(event.getAuthor()), event.getAuthor().getEffectiveAvatarUrl());
                     event.sendMessage(embed.build()).queue();
                 })
                 .build();
+    }
+
+    private static String map(OnlineStatus status) {
+        switch (status) {
+            case ONLINE:
+                return Emojis.ONLINE;
+            case DO_NOT_DISTURB:
+                return Emojis.DND;
+            case IDLE:
+                return Emojis.AWAY;
+            case INVISIBLE:
+                return Emojis.INVISIBLE;
+            case OFFLINE:
+                return Emojis.OFFLINE;
+            default:
+                return "tf?";
+        }
     }
 }

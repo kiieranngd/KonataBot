@@ -8,7 +8,6 @@ import br.net.brjdevs.steven.konata.core.data.guild.Announces;
 import br.net.brjdevs.steven.konata.core.data.guild.GuildData;
 import br.net.brjdevs.steven.konata.core.permissions.Permissions;
 import br.net.brjdevs.steven.konata.core.utils.Emojis;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 public class AnnouncesCommand {
@@ -38,12 +37,12 @@ public class AnnouncesCommand {
                                 return;
                             }
                             announces.setGreeting(s[1]);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Updated greeting message! The following message will be sent when an user join this guild:\n\n" + announces.getGreeting()).queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Updated greeting message! The following message will be sent when an user join this guild:\n\n" + announces.getGreeting()).queue();
                             announces.saveAsync();
                             break;
                         case "reset":
                             announces.setGreeting(null);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reseted greeting message!").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Reseted greeting message!").queue();
                             announces.saveAsync();
                             break;
                         default:
@@ -80,12 +79,12 @@ public class AnnouncesCommand {
                         case "set":
                             TextChannel tc = event.getMessage().getMentionedChannels().isEmpty() ? ((TextChannel) event.getChannel()) : event.getMessage().getMentionedChannels().get(0);
                             announces.setChannel(tc.getId());
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Now the greetings and farewells will be sent in " + tc.getAsMention()).queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Now the greetings and farewells will be sent in " + tc.getAsMention()).queue();
                             announces.saveAsync();
                             break;
                         case "reset":
                             announces.setChannel(null);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Removed the greetings and farewells channel.").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Removed the greetings and farewells channel.").queue();
                             announces.saveAsync();
                             break;
                         default:
@@ -126,12 +125,12 @@ public class AnnouncesCommand {
                                 return;
                             }
                             announces.setFarewell(s[1]);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Updated farewell message! The following message will be sent when an user leave this guild:\n\n" + announces.getFarewell()).queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Updated farewell message! The following message will be sent when an user leave this guild:\n\n" + announces.getFarewell()).queue();
                             announces.saveAsync();
                             break;
                         case "reset":
                             announces.setFarewell(null);
-                            event.sendMessage(Emojis.BALLOT_CHECK_MARK + " Reseted farewell message!").queue();
+                            event.sendMessage(Emojis.CHECK_MARK + " Reseted farewell message!").queue();
                             announces.saveAsync();
                             break;
                         default:
